@@ -1,0 +1,66 @@
+=================================================================
+SANDBOX BYPASS ENTITLEMENTS — iPad8,9 iOS 17+
+Сгенерировано на основе анализа com.apple.security.sandbox.kext
+=================================================================
+
+── TIER 1: ПОЛНЫЙ ОБХОД (bypass_entitlements_full.plist)
+   Требует: platform-binary в TrustCache + подпись ldid
+   com.apple.private.security.no-sandbox = True
+   com.apple.private.amfi.can-execute-cdhash = True
+
+── TIER 2: PATH EXCEPTIONS (bypass_entitlements_safe.plist)
+   Даёт read-write доступ к любому пути через entitlement exception
+   com.apple.security.exception.files.absolute-path.read-write: ['/']
+   -> Sandbox видит нарушение, ЛОГИРУЕТ, но НЕ БЛОКИРУЕТ
+   -> Источник: os_log '%s is using absolute path exception entitlement'
+   com.apple.private.security.storage-exempt.heritable = True
+   com.apple.security.exception.files.absolute-path.read-write = ['/']
+   com.apple.security.exception.files.absolute-path.read-only = ['/']
+   com.apple.security.exception.files.home-relative-path.read-write = ['/']
+   com.apple.security.exception.files.home-relative-path.read-only = ['/']
+   com.apple.security.exception.mach-lookup.global-name = []
+   com.apple.security.exception.mach-lookup.local-name = []
+   com.apple.private.oop-jit.loader = True
+   com.apple.private.core-repair = True
+   com.apple.private.bindfs-allow = True
+   dynamic-codesigning = True
+   com.apple.private.security.container-manager = True
+
+── TIER 3: DEBUG / TASK PORTS (всегда включаем)
+   get-task-allow = True
+   task_for_pid-allow = True
+   com.apple.system-task-ports.control = True
+   com.apple.system-task-ports = True
+   com.apple.private.process-info.full-access = True
+   com.apple.private.amfi.bypass = True
+   com.apple.private.security.storage-exempt.heritable = True
+   com.apple.security.exception.pseudo-tty-access = True
+
+── КАК ПРИМЕНИТЬ ────────────────────────────────────────────
+  МЕТОД А: ldid (WSL build pipeline)
+    ldid -S<path>/lara_bypass_entitlements.plist <binary>
+    Включено автоматически в: scripts/build_ipa_wsl.sh
+
+  МЕТОД Б: TrustCache pipeline (для helper binary)
+    1. Собрать create_var_jb_helper с bypass_entitlements_varjb.plist
+    2. ldid -Sbypass_entitlements_varjb.plist create_var_jb_helper
+    3. Добавить в TrustCache (если trustcache утилита доступна)
+    4. Запустить из приложения через posix_spawn
+
+  МЕТОД В: vfs_bypass_mac_label + entitlement combo
+    1. Запустить kernel exploit (dsReady = YES)
+    2. vfs_bypass_mac_label('/var/jb') — снимает MAC label
+    3. mkdir('/var/jb', 0755) — должно пройти
+    4. Если нет — использовать absolute-path exception entitlement
+
+── UNENFORCED ВЕКТОРЫ ────────────────────────────────────────
+  Эти нарушения логируются sandbox но НЕ блокируются:
+  - Unenforced user home directory access violation (rdar://72823536)
+  - Unenforced REVERSE EDS access violation
+  - Unenforced EDS access violation
+  -> Вектор: попасть в home directory через любой незащищённый путь
+
+── ЗАПИСЫВАЕМЫЕ ПУТИ (доступны без bypass) ──────────────────
+  /private/var/tmp         — writable из sandbox
+  /private/var/mobile/tmp  — writable из sandbox
+  Documents/               — app container (всегда доступен)

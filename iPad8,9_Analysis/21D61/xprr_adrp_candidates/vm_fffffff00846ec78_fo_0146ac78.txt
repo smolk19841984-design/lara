@@ -1,0 +1,67 @@
+; Candidate 1545
+; ADRP+ADD at VM 0xfffffff00846ec78 (fileoff 0x146ac78): page=0x1ff500000 add_imm=0xd28
+
+0xfffffff00846ebf8: 29008052  mov	w9, #1
+0xfffffff00846ebfc: 09e10cb9  str	w9, [x8, #0xce0]
+0xfffffff00846ec00: 08a8ff90  adrp	x8, #0xfffffff00796e000
+0xfffffff00846ec04: 08c13391  add	x8, x8, #0xcf0
+0xfffffff00846ec08: 090100b9  str	w9, [x8]
+0xfffffff00846ec0c: 135100f9  str	x19, [x8, #0xa0]
+0xfffffff00846ec10: 693240f9  ldr	x9, [x19, #0x60]
+0xfffffff00846ec14: 094d00f9  str	x9, [x8, #0x98]
+0xfffffff00846ec18: 696a40b9  ldr	w9, [x19, #0x68]
+0xfffffff00846ec1c: 095500f9  str	x9, [x8, #0xa8]
+0xfffffff00846ec20: 691640f9  ldr	x9, [x19, #0x28]
+0xfffffff00846ec24: 090500f9  str	x9, [x8, #8]
+0xfffffff00846ec28: 6082c33c  ldur	q0, [x19, #0x38]
+0xfffffff00846ec2c: 0005803d  str	q0, [x8, #0x10]
+0xfffffff00846ec30: 69aa44a9  ldp	x9, x10, [x19, #0x48]
+0xfffffff00846ec34: 4b1d4092  and	x11, x10, #0xff
+0xfffffff00846ec38: 092d02a9  stp	x9, x11, [x8, #0x20]
+0xfffffff00846ec3c: 497d48d3  ubfx	x9, x10, #8, #0x18
+0xfffffff00846ec40: 29614a0b  add	w9, w9, w10, lsr #24
+0xfffffff00846ec44: 29050012  and	w9, w9, #3
+0xfffffff00846ec48: 09210239  strb	w9, [x8, #0x88]
+0xfffffff00846ec4c: 694a4139  ldrb	w9, [x19, #0x52]
+0xfffffff00846ec50: 29050011  add	w9, w9, #1
+0xfffffff00846ec54: 09250239  strb	w9, [x8, #0x89]
+0xfffffff00846ec58: 691a40f9  ldr	x9, [x19, #0x30]
+0xfffffff00846ec5c: 091900f9  str	x9, [x8, #0x30]
+0xfffffff00846ec60: c061fff0  adrp	x0, #0xfffffff0070a9000
+0xfffffff00846ec64: 00242991  add	x0, x0, #0xa49
+0xfffffff00846ec68: 66bae397  bl	#0xfffffff007d5d600
+0xfffffff00846ec6c: 02040091  add	x2, x0, #1
+0xfffffff00846ec70: 5ffc00f1  cmp	x2, #0x3f
+0xfffffff00846ec74: 88020054  b.hi	#0xfffffff00846ecc4
+0xfffffff00846ec78: 00a8ff90  adrp	x0, #0xfffffff00796e000
+0xfffffff00846ec7c: 00a03491  add	x0, x0, #0xd28
+0xfffffff00846ec80: c161fff0  adrp	x1, #0xfffffff0070a9000
+0xfffffff00846ec84: 21242991  add	x1, x1, #0xa49
+0xfffffff00846ec88: 4277e397  bl	#0xfffffff007d4c990
+0xfffffff00846ec8c: f4020034  cbz	w20, #0xfffffff00846ece8
+0xfffffff00846ec90: e00313aa  mov	x0, x19
+0xfffffff00846ec94: f7fdff97  bl	#0xfffffff00846e470
+0xfffffff00846ec98: e00313aa  mov	x0, x19
+0xfffffff00846ec9c: fd7b47a9  ldp	x29, x30, [sp, #0x70]
+0xfffffff00846eca0: f44f46a9  ldp	x20, x19, [sp, #0x60]
+0xfffffff00846eca4: f65745a9  ldp	x22, x21, [sp, #0x50]
+0xfffffff00846eca8: f85f44a9  ldp	x24, x23, [sp, #0x40]
+0xfffffff00846ecac: ff030291  add	sp, sp, #0x80
+0xfffffff00846ecb0: ff2303d5  autibsp	
+0xfffffff00846ecb4: d0071eca  eor	x16, x30, x30, lsl #1
+0xfffffff00846ecb8: 5000f0b6  tbz	x16, #0x3e, #0xfffffff00846ecc0
+0xfffffff00846ecbc: 208e38d4  brk	#0xc471
+0xfffffff00846ecc0: a7fdff17  b	#0xfffffff00846e35c
+0xfffffff00846ecc4: 15a8ff90  adrp	x21, #0xfffffff00796e000
+0xfffffff00846ecc8: b5a23491  add	x21, x21, #0xd28
+0xfffffff00846eccc: c161fff0  adrp	x1, #0xfffffff0070a9000
+0xfffffff00846ecd0: 21242991  add	x1, x1, #0xa49
+0xfffffff00846ecd4: e00315aa  mov	x0, x21
+0xfffffff00846ecd8: e2078052  mov	w2, #0x3f
+0xfffffff00846ecdc: 2d77e397  bl	#0xfffffff007d4c990
+0xfffffff00846ece0: bffe0039  strb	wzr, [x21, #0x3f]
+0xfffffff00846ece4: 74fdff35  cbnz	w20, #0xfffffff00846ec90
+0xfffffff00846ece8: 09a8ff90  adrp	x9, #0xfffffff00796e000
+0xfffffff00846ecec: 29213691  add	x9, x9, #0xd88
+0xfffffff00846ecf0: 280140f9  ldr	x8, [x9]
+0xfffffff00846ecf4: 290940f9  ldr	x9, [x9, #0x10]

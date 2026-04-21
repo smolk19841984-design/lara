@@ -1,0 +1,408 @@
+research_new_method_sandbox — static hints (NOT runtime exploit code)
+kext: C:\Users\smolk\Documents\2\lara-main\iPad8,9_Analysis\21D61\kexts\com.apple.security.sandbox
+sha256: 9a308a778edfcabe4f6951900dc4f26d6c124b6b23da0869629026b53a47d718
+size: 7225344 bytes
+unique strings (min_len=6): 10692
+
+--- How this feeds a NEW method (workflow) ---
+1) Strings suggest which kernel/MAC subsystems the sandbox kext touches.
+2) Cross-check with IDA/Hopper on kernelcache.decompressed at symbols from
+   21D61/symbols/*.symbols.json — find who calls what.
+3) In Lara: one minimal new primitive (e.g. label vs ucred) + PPL-safe write,
+   then device log — iterate. No method appears from docs alone.
+
+=== cred_uid (0 samples) ===
+
+=== mac_label (1 samples) ===
+"%s: mac_policy_register failed: %d\n" @%s:%d
+
+=== proc_task (94 samples) ===
+Hkern.proc
+Ikern.proc.
+Lcputhreadtype
+Lkern.proc.all
+Mkern.proc.pid.
+Nkern.proc.pid.1
+Qkern.max_task_pmem
+Qsysctl.proc_native
+Ssysctl.proc_cputype.
+Ztask_no_footprint_for_debug
+]vm.task_no_footprint_for_debug
+com.apple.private.kernel.global-proc-info
+hook_thread_userret
+host_security_create_task_token
+host_security_set_task_token
+jvfs.generic.apfs.proc_free_blocks_threshold
+mach_task_is_self
+site.struct userret_task_entry
+task_create_identity_token
+task_dyld_process_info_notify_deregister
+task_dyld_process_info_notify_register
+task_for_pid-allow
+task_generate_corpse
+task_get_dyld_image_infos
+task_get_exc_guard_behavior
+task_get_exception_ports_from_user
+task_get_exception_ports_info
+task_get_mach_voucher
+task_get_special_port_from_user
+task_get_state
+task_identity_token_get_task_port
+task_info_from_user
+task_inspect
+task_map_corpse_info
+task_map_corpse_info_64
+task_map_kcdata_object_64
+task_policy_get
+task_policy_set
+task_purgable_info
+task_register_dyld_get_process_state
+task_register_dyld_image_infos
+task_register_dyld_set_dyld_state
+task_register_dyld_shared_cache_image_info
+task_restartable_ranges_register
+task_restartable_ranges_synchronize
+task_resume
+task_resume2
+task_set_corpse_forking_behavior
+task_set_exc_guard_behavior
+task_set_exception_ports
+task_set_info
+task_set_mach_voucher
+task_set_phys_footprint_limit
+task_set_port_space
+task_set_special_port
+task_set_state
+task_suspend
+task_suspend2
+task_swap_exception_ports
+task_swap_mach_voucher
+task_terminate
+task_test_async_upcall_propagation
+task_test_sync_upcall
+task_threads_from_user
+task_unregister_dyld_image_infos
+task_wire
+thread_abort
+thread_abort_safely
+thread_convert_thread_state
+thread_create_from_user
+thread_create_running_from_user
+thread_depress_abort_from_user
+thread_get_exception_ports_from_user
+thread_get_exception_ports_info
+thread_get_mach_voucher
+thread_get_special_port_from_user
+thread_get_state_to_user
+thread_info
+thread_policy
+thread_policy_get
+thread_policy_set
+thread_resume
+thread_set_exception_ports
+thread_set_mach_voucher
+thread_set_policy
+thread_set_special_port
+thread_set_state_from_user
+thread_suspend
+thread_swap_exception_ports
+thread_swap_mach_voucher
+thread_terminate
+thread_wire
+userret_task_list_enlarge
+v24@?0^{proc=}8^B16
+
+=== sandbox_api (399 samples) ===
+ extension-class:%s
+ target:%s extension-class:%s
+"%s: allocation header marked as not sandbox tracked (%p)" @%s:%d
+"%s: allocation header marked as sandbox tracked (%p)" @%s:%d
+"%s: null sandbox pointer for tracked allocation (%p)" @%s:%d
+"%s: tracked deallocation caused sandbox size to underflow (%p)" @%s:%d
+"extension handle count overflow" @%s:%d
+"failed to initialize platform sandbox: %d" @%s:%d
+"platform sandbox invalid (%s)" @%s:%d
+"sandbox %p leaked %llu bytes" @%s:%d
+"sandbox mask count overflow" @%s:%d
+"sandbox mask count underflow" @%s:%d
+"sandbox state %p points back to %p instead of %p" @%s:%d
+"unexpected persistent refcount (%u) on sandbox %p" @%s:%d
+#/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.icloud.findmydevice.managed/Library
+$/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.ondemandresources/Library/AssetPacks
+%s exhausted sandbox memory capacity; may be leaking extensions
+%s expects container but none provided by containermanagerd
+%s failed: %s[%d] not sandboxed
+%s failed: container already set for %s[%d]
+,/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.nsurlstoragedresources/Library/dafsaData.bin
+/Applications/MobileSafari.app/XPCServices/com.apple.Safari.SandboxBroker.xpc/com.apple.Safari.SandboxBroker
+/Extensions
+/Library/Application Support/SMBClientProvider/session/containers
+/Library/Caches/com.apple.nsurlsessiond/Downloads/com.apple.containermanagerd
+/System/Library/CoreServices/CacheDeleteAppContainerCaches
+/System/Library/Frameworks/ExtensionFoundation.framework/XPCServices/extensionkitservice.xpc/extensionkitservice
+/System/Library/Frameworks/NetworkExtension.framework/PluginIKEv2.vpnplugin
+/System/Library/Frameworks/PDFKit.framework/PlugIns/com.apple.PDFKit.PDFExtensionView.appex/com.apple.PDFKit.PDFExtensionView
+/System/Library/PrivateFrameworks/iCloudDriveService.framework/XPCServices/ContainerMetadataExtractor.xpc/ContainerMetadataExtractor
+/private/var/Managed Preferences/mobile/com.apple.networkextension
+/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.
+/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles
+/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.lsd.iconscache
+/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilestorageproxy
+/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.osanalytics/DiagnosticReports
+/private/var/db/Sandbox
+/private/var/db/Sandbox/syncroots.v2
+/private/var/preferences/com.apple.networkextension.uuidcache.plist
+/usr/libexec/containermanagerd
+/usr/libexec/containermanagerd_system
+/usr/libexec/diagnosticextensionsd
+3/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles/Library/ConfigurationProfiles
+=/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles/Library/ConfigurationProfiles/MDM.plist
+=/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.installcoordinationd/Library/InstallCoordination/Removability
+>/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles/Library/ConfigurationProfiles/PublicInfo
+>containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles/Library/ConfigurationProfiles/PublicInfo/MCMeta.plist
+?/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.installcoordinationd/Library/InstallCoordination/PromiseStaging
+?/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist
+App Group Container (%s) path: %s
+AppDataContainers
+AppleInternal/Library/Preferences/Logging/Subsystems/com.apple.networkextension.plist
+B24@?0^{_sb_extension={?=^{_sb_extension}}q[32C]{os_refcnt=AI}CBI(?={?=*QBCIQ{?=^{_sb_extension}^^{_sb_extension}}}{?=^{OSObject}*Q})}8r*16
+CM_KERN_REPLY_DATA_CONTAINER_PATH: no ustate
+CM_KERN_REQUEST_CONTAINER_ID
+CM_KERN_REQUEST_CONTAINER_TYPE
+CM_KERN_REQUEST_SYSTEM_CONTAINER_ID
+CM_KERN_REQUEST_SYSTEM_GROUP_CONTAINER_ID
+CacheDeleteAppContainerCaches
+CredentialProviderExtensionHelper
+Data container path: %s
+F/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles/Library/ConfigurationProfiles/UserSettings.plist
+FSandbox
+Failed to get the HOST_CONTAINERD_PORT port: %d
+GSandbox-
+H.Sandbox-
+I/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles/Library/ConfigurationProfiles/PayloadManifest.plist
+IContainers
+Icontainers
+Iextension.
+J/Containers
+J/containers
+J/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles/Library/ConfigurationProfiles/MDMAppManagement.plist
+JContainers/
+JUIExtension
+Jcontainers/
+K/Containers/
+MAP_JIT requires sandboxing
+Mlsd.extensions
+MobileBackup.framework.FollowUpUIExtension.apple-extension-service
+MobileContainerManager
+Mpkg_extensions
+NContainers/Data
+Nextension.plist
+Nlinkd.extension
+Npp-sandbox.read
+O/Containers/Data
+O/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles/Library/ConfigurationProfiles/EffectiveUserSettings.plist
+OContainers/Data/
+Oapp-sandbox.read
+Osandbox.sentinel
+P/Containers/Data/
+PFacetimeExtension
+Pcontainermanagerd
+Pcontainers/Bundle
+Q/Containers/Bundle
+Q/containers/Shared
+QAppleAPFSContainer
+QContainers/Bundle/
+QSFollowUpExtension
+Qcontainermanagerd.
+Qcontainers/Bundle/
+Rextension.previewUI
+Rnetworkd/Containers
+S.diagnosticextension
+S/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles/Library/ConfigurationProfiles/CloudConfigurationDetails.plist
+Sandbox
+Sandbox -- persona_id type mismatch
+Sandbox -- syscall_container_map when removing a container: no ustate for UID %d
+Sandbox -- syscall_container_map when setting a container mapping: no ustate for UID %d
+Sandbox apply: %s[%d] %s
+Sandbox extension sentinel
+Sandbox failed to revoke host port (%d) for pid %d
+Sandbox: %s is using absolute path exception entitlement: mapping path %s (%lu) to %s (%lu).
+Sandbox: container_inspect_for_proc(): no signing identifier for pid: %d.
+Sandbox: container_inspect_for_proc(): no user state for pid: %d.
+Sandbox: hook..execve() killing %s[pid=%d, uid=%d]: %s%s
+Sandbox: hook..execve() killing %s[pid=%d, uid=%d]: (err=%d) %s%s
+Sandbox: issue_extension_for_absolute_path(): could not get home directory for front uid: %d
+Sandbox: issue_extension_for_absolute_path(): could not get ustate for front uid: %d
+... (279 more)
+
+=== special (196 samples) ===
+ codesigning-operation:
+"%s: failed to look up AMFI service\n" @%s:%d
+/Applications/TrustMe.app/TrustMe
+/System/Library/Frameworks/CoreTelephony.framework/Support/CommCenterRootHelper
+/System/Library/Frameworks/Security.framework/XPCServices/TrustedPeersHelper.xpc/TrustedPeersHelper
+/private/var/db/Sandbox/syncroots.v2
+/private/var/root
+/usr/libexec/amfid
+/usr/libexec/nanoregistrylaunchd
+Allowing read access to root
+CM_KERN_REQUEST_CODE_SIGNATURE_ID
+Etrustd
+F/trustd
+Flaunchd
+G-launchd
+GRootType
+H/alt_root
+Jroot-helper
+LIOSurfaceRoot
+Lamfi.lockdown
+Lroot/Library/
+Lystem-trusted
+MAP_JIT requires the dynamic-codesigning entitlement
+MIOPMrootDomain
+MRootUserClient
+Ocom.apple.trustd
+Oprotected/trustd
+Oroot-ticket-hash
+P/com.apple.trustd
+P/private/var/root
+Qcom.apple.amfi.xpc
+QmmCenterRootHelper
+SRootDomainUserClient
+Sonsistent-debug-root
+Sroot/Library/Caches/
+Stmp/com.apple.trustd
+T/private/var/db/amfid
+TSurfaceRootUserClient
+Ucom.apple.trustd.agent
+VIOSurfaceRootUserClient
+X/private/var/root/Library
+Y/usr/bin/codesign_allocate
+Yamfi.developer_mode_status
+\/private/var/protected/trustd
+_/Library/Caches/powerlog.launchd
+_/private/var/root/Library/Caches
+`.nanoregistry.nanoregistrylaunchd
+`/private/var/root/Library/Caches/
+a/private/var/root/Library/Lockdown
+amfi_copy_seatbelt_profile_names() failed
+attempting to use a container without a code signing identity.
+bSecurity/Trust Settings/Admin.plist
+com.apple.afc.root
+com.apple.private.amfi.can-execute-cdhash
+com.apple.private.amfi.can-load-cdhash
+com.apple.private.passkit.trusted-device-enrollment-info
+com.apple.private.security.register-sync-root
+com.apple.private.security.storage.amfid
+com.apple.private.security.storage.trustd
+com.apple.private.security.storage.trustd-private
+com.apple.private.xpc.launchd.event-monitor
+com.apple.rootless
+com.apple.rootless.datavault.metadata
+com.apple.rootless.restricted-block-devices
+com.apple.rootless.restricted-block-devices.read
+com.apple.rootless.storage.
+com.apple.rootless.storage.Accounts
+com.apple.rootless.storage.AppBundles
+com.apple.rootless.storage.AppDataContainers
+com.apple.rootless.storage.AppStoreCache
+com.apple.rootless.storage.AppleMediaServices
+com.apple.rootless.storage.Biome
+com.apple.rootless.storage.BulletinDistributor
+com.apple.rootless.storage.Calendar
+com.apple.rootless.storage.CallHistory
+com.apple.rootless.storage.CarrierBundles
+com.apple.rootless.storage.CognitiveHealth
+com.apple.rootless.storage.ContactlessReader
+com.apple.rootless.storage.CoreFollowUp
+com.apple.rootless.storage.CoreRoutine
+com.apple.rootless.storage.Cryptex
+com.apple.rootless.storage.DoNotDisturb
+com.apple.rootless.storage.DumpPanic
+com.apple.rootless.storage.ExposureNotification
+com.apple.rootless.storage.FaceTime
+com.apple.rootless.storage.Health
+com.apple.rootless.storage.HomeAI
+com.apple.rootless.storage.HomeKit
+com.apple.rootless.storage.IdentityServices
+com.apple.rootless.storage.IntelligencePlatform
+com.apple.rootless.storage.Lockdown
+com.apple.rootless.storage.Mail
+com.apple.rootless.storage.Messages
+com.apple.rootless.storage.MessagesMetaData
+com.apple.rootless.storage.MobileContainerManager
+com.apple.rootless.storage.MobileDocuments
+com.apple.rootless.storage.NanoTimeKit.FaceSupport
+com.apple.rootless.storage.Notes
+com.apple.rootless.storage.PhotosLibraries
+com.apple.rootless.storage.PineBoard
+com.apple.rootless.storage.PrivacyAccounting
+com.apple.rootless.storage.Safari
+com.apple.rootless.storage.SecureElementService
+com.apple.rootless.storage.SensorKit
+com.apple.rootless.storage.Shortcuts
+com.apple.rootless.storage.SiriInference
+com.apple.rootless.storage.SiriReferenceResolution
+com.apple.rootless.storage.SiriSELF
+com.apple.rootless.storage.SiriVocabulary
+com.apple.rootless.storage.SoC
+com.apple.rootless.storage.SoundProfileAsset
+com.apple.rootless.storage.SpeechPersonalizedLM
+com.apple.rootless.storage.Spotlight
+com.apple.rootless.storage.StatusKit
+com.apple.rootless.storage.Suggestions
+com.apple.rootless.storage.SymptomFramework
+com.apple.rootless.storage.TCC
+com.apple.rootless.storage.TPM
+com.apple.rootless.storage.Voicemail
+com.apple.rootless.storage.Weather
+... (76 more)
+
+=== vfs (47 samples) ===
+"%s called on incorrect vnode type" @%s:%d
+/Library/Caches/com.apple.nsurlsessiond/Downloads/com.apple.userfs_helper
+Dmount
+Hmaxvnodes
+Irage_vnode
+Lfactory_mount
+Luserfs_helper
+MAPFSUserClient
+Mfactory_mount/
+Mkern.maxvnodes
+MobileStorageMounter
+NAppleAPFSVolume
+Nkern.rage_vnode
+OCodecsUserClient
+OProResUserClient
+Papfs.fs/fsck_apfs
+QAppleAPFSContainer
+QServicesUserClient
+QppleAPFSUserClient
+RAnalyticsUserClient
+RAppleAPFSUserClient
+RAppleLIFSUserClient
+Suserdata/diagnostics
+Tstorage_mounter_proxy
+VAppleHWAccessUserClient
+VCoreAnalyticsUserClient
+VIOAudioCodecsUserClient
+]com.apple.MobileStorageMounter
+^IOPortTransportAIDBusUserClient
+_AppleBiometricServicesUserClient
+ccom.apple.mobile.storage_mounter.xpc
+com.apple.private.apfs.trim-active-file
+com.apple.private.security.storage.MobileStorageMounter
+d/private/var/run/mobile_image_mounter
+ecoreservices.lsuseractivitymanager.xpc
+f/Library/Caches/com.apple.userfs_helper
+file-mount
+file-mount-update
+file-unmount
+fs-snapshot-mount
+jvfs.generic.apfs.proc_free_blocks_threshold
+lsuseractivityd
+mobile_storage_mounter
+ocom.apple.coreservices.lsuseractivitymanager.xpc
+sync root flag on unexpected vnode type %u for path %s
+system-automount
+userfs_helper

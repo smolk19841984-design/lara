@@ -1,0 +1,511 @@
+Candidate 1 Analysis
+================================================================================
+VM 17.3.1: 0xfffffff007f2e930
+VM 17.4:   0xfffffff007f2eacc
+
+17.4 full function:
+--------------------------------------------------------------------------------
+  0xfffffff007f2eacc: stp x29, x30, [sp, #-0x10]!
+  0xfffffff007f2ead0: mov x29, sp
+  0xfffffff007f2ead4: .word 0xd538d088
+  0xfffffff007f2ead8: ldr w9, [x8, #0x5a0]
+  0xfffffff007f2eadc: .word 0x121d792a
+  0xfffffff007f2eae0: str w10, [x8, #0x5a0]
+  0xfffffff007f2eae4: .word 0x121d0928
+  0xfffffff007f2eae8: cmp w8, #0x8
+  0xfffffff007f2eaec: b.eq #+0x20  // -> 0xfffffff007f2eb0c
+  0xfffffff007f2eaf0: .word 0x52800022
+  0xfffffff007f2eaf4: ldp x29, x30, [sp], #0x10
+  0xfffffff007f2eaf8: paciasp
+  0xfffffff007f2eafc: and x16, x30, x30
+  0xfffffff007f2eb00: .word 0xb6f00050
+  0xfffffff007f2eb04: .word 0xd4388e20
+  0xfffffff007f2eb08: b #+0xc  // -> 0xfffffff007f2eb14
+  0xfffffff007f2eb0c: .word 0x52800080
+  0xfffffff007f2eb10: bl #+0x3c3878  // -> 0xfffffff0082f2388
+  0xfffffff007f2eb14: pacibsp
+  0xfffffff007f2eb18: .word 0xd10183ff
+  0xfffffff007f2eb1c: .word 0xa90357f6
+  0xfffffff007f2eb20: .word 0xa9044ff4
+  0xfffffff007f2eb24: .word 0xa9057bfd
+  0xfffffff007f2eb28: .word 0x910143fd
+  0xfffffff007f2eb2c: and x22, x31, x2
+  0xfffffff007f2eb30: and x19, x31, x1
+  0xfffffff007f2eb34: and x21, x31, x0
+  0xfffffff007f2eb38: .word 0xa9007fff
+  0xfffffff007f2eb3c: bl #+0x3ffee7824  // -> 0xfffffff407e16360
+  0xfffffff007f2eb40: and x20, x31, x0
+  0xfffffff007f2eb44: ldr w1, [x19, #0x0]
+  0xfffffff007f2eb48: .word 0x910003e2
+  0xfffffff007f2eb4c: .word 0x910023e3
+  0xfffffff007f2eb50: and x0, x31, x21
+  0xfffffff007f2eb54: bl #+0x26bff4  // -> 0xfffffff00819ab48
+  0xfffffff007f2eb58: and x21, x31, x0
+  0xfffffff007f2eb5c: .word 0x35000700
+  0xfffffff007f2eb60: ldr x0, [x31, #0x8]
+  0xfffffff007f2eb64: bl #+0x3fffe776c  // -> 0xfffffff407f162d0
+  0xfffffff007f2eb68: and x21, x31, x0
+  0xfffffff007f2eb6c: .word 0x35000640
+  0xfffffff007f2eb70: ldr x8, [x31, #0x8]
+  0xfffffff007f2eb74: adrp x9, #0x22cd000  // -> 0xfffffff00a1fb000
+  0xfffffff007f2eb78: .word 0x9138c129
+  0xfffffff007f2eb7c: adrp x10, #0x22cd000  // -> 0xfffffff00a1fb000
+  0xfffffff007f2eb80: .word 0xa90123e9
+  0xfffffff007f2eb84: .word 0xa90253ff
+  0xfffffff007f2eb88: str w22, [x31, #0x20]
+  0xfffffff007f2eb8c: ldr x8, [x8, #0xd0]
+  0xfffffff007f2eb90: ldrsw x9, [x10, #0xe30]
+  0xfffffff007f2eb94: .word 0xf8697908
+  0xfffffff007f2eb98: .word 0x910043e0
+  0xfffffff007f2eb9c: .word 0xd2860f51
+  0xfffffff007f2eba0: .word 0xd73f0911
+  0xfffffff007f2eba4: and x21, x31, x0
+  0xfffffff007f2eba8: .word 0x35000420
+  0xfffffff007f2ebac: ldr x1, [x31, #0x8]
+  0xfffffff007f2ebb0: ldr w8, [x1, #0x54]
+  0xfffffff007f2ebb4: .word 0x36b003c8
+  0xfffffff007f2ebb8: and x9, x31, x1
+  0xfffffff007f2ebbc: .word 0xf84c0d30
+  0xfffffff007f2ebc0: cbz w0, #+0x6c  // -> 0xfffffff007f2ec2c
+  0xfffffff007f2ebc4: and x17, x31, x9
+  0xfffffff007f2ebc8: .word 0xf2fea0d1
+  0xfffffff007f2ebcc: .word 0xdac11a30
+  0xfffffff007f2ebd0: and x17, x31, x16
+  0xfffffff007f2ebd4: .word 0xdac147f1
+  0xfffffff007f2ebd8: .word 0xeb11021f
+  0xfffffff007f2ebdc: b.eq #+0x8  // -> 0xfffffff007f2ebe4
+  0xfffffff007f2ebe0: .word 0xd4388e40
+  0xfffffff007f2ebe4: .word 0x12110108
+  0xfffffff007f2ebe8: cmp x16, #0x0
+  0xfffffff007f2ebec: .word 0x7a401904
+  0xfffffff007f2ebf0: b.eq #+0x3c  // -> 0xfffffff007f2ec2c
+  0xfffffff007f2ebf4: ldr x8, [x31, #0x0]
+  0xfffffff007f2ebf8: .word 0xf8410d10
+  0xfffffff007f2ebfc: and x17, x31, x8
+  0xfffffff007f2ec00: .word 0xf2e18eb1
+  0xfffffff007f2ec04: .word 0xdac11a30
+  0xfffffff007f2ec08: and x17, x31, x16
+  0xfffffff007f2ec0c: .word 0xdac147f1
+  0xfffffff007f2ec10: .word 0xeb11021f
+  0xfffffff007f2ec14: b.eq #+0x8  // -> 0xfffffff007f2ec1c
+  0xfffffff007f2ec18: .word 0xd4388e40
+  0xfffffff007f2ec1c: .word 0x39404a08
+  0xfffffff007f2ec20: .word 0x36000068
+  0xfffffff007f2ec24: and x2, x31, x20
+  0xfffffff007f2ec28: bl #+0x123e0  // -> 0xfffffff007f41008
+  0xfffffff007f2ec2c: ldr x0, [x31, #0x8]
+  0xfffffff007f2ec30: bl #+0x3fffe3f6c  // -> 0xfffffff407f12b9c
+  0xfffffff007f2ec34: ldr w0, [x19, #0x0]
+  0xfffffff007f2ec38: bl #+0x26c790  // -> 0xfffffff00819b3c8
+  0xfffffff007f2ec3c: and x0, x31, x21
+  0xfffffff007f2ec40: .word 0xa9457bfd
+  0xfffffff007f2ec44: .word 0xa9444ff4
+  0xfffffff007f2ec48: .word 0xa94357f6
+  0xfffffff007f2ec4c: .word 0x910183ff
+  0xfffffff007f2ec50: .word 0xd65f0fff
+  0xfffffff007f2ec54: autiasp
+  0xfffffff007f2ec58: .word 0x52800022
+  0xfffffff007f2ec5c: b #+0x3fffffeb8  // -> 0xfffffff407f2eb14
+  0xfffffff007f2ec60: pacibsp
+  0xfffffff007f2ec64: stp x29, x30, [sp, #-0x10]!
+  0xfffffff007f2ec68: mov x29, sp
+  0xfffffff007f2ec6c: .word 0xd538d088
+  0xfffffff007f2ec70: ldr w9, [x8, #0x5a0]
+  0xfffffff007f2ec74: .word 0x121d792a
+  0xfffffff007f2ec78: str w10, [x8, #0x5a0]
+  0xfffffff007f2ec7c: .word 0x121d0928
+  0xfffffff007f2ec80: cmp w8, #0x8
+  0xfffffff007f2ec84: b.eq #+0x20  // -> 0xfffffff007f2eca4
+  0xfffffff007f2ec88: .word 0x52800082
+  0xfffffff007f2ec8c: ldp x29, x30, [sp], #0x10
+  0xfffffff007f2ec90: paciasp
+  0xfffffff007f2ec94: and x16, x30, x30
+  0xfffffff007f2ec98: .word 0xb6f00050
+  0xfffffff007f2ec9c: .word 0xd4388e20
+  0xfffffff007f2eca0: b #+0x3fffffe74  // -> 0xfffffff407f2eb14
+  0xfffffff007f2eca4: .word 0x52800080
+  0xfffffff007f2eca8: bl #+0x3c36e0  // -> 0xfffffff0082f2388
+  0xfffffff007f2ecac: pacibsp
+  0xfffffff007f2ecb0: .word 0xa9ba6ffc
+  0xfffffff007f2ecb4: .word 0xa90167fa
+  0xfffffff007f2ecb8: .word 0xa9025ff8
+  0xfffffff007f2ecbc: .word 0xa90357f6
+  0xfffffff007f2ecc0: .word 0xa9044ff4
+  0xfffffff007f2ecc4: .word 0xa9057bfd
+  0xfffffff007f2ecc8: .word 0x910143fd
+  0xfffffff007f2eccc: .word 0xd10dc3ff
+  0xfffffff007f2ecd0: and x20, x31, x1
+  0xfffffff007f2ecd4: adrp x8, #0x22e1000  // -> 0xfffffff00a20f000
+  0xfffffff007f2ecd8: .word 0x91000108
+  0xfffffff007f2ecdc: ldr x8, [x8, #0x0]
+  0xfffffff007f2ece0: .word 0xf81a83a8
+  0xfffffff007f2ece4: .word 0x9100e3e8
+  0xfffffff007f2ece8: str x31, [x31, #0x360]
+  0xfffffff007f2ecec: .word 0x6f00e400
+  0xfffffff007f2ecf0: .word 0xad1a03e0
+  0xfffffff007f2ecf4: .word 0xad1903e0
+  0xfffffff007f2ecf8: .word 0xad1803e0
+  0xfffffff007f2ecfc: .word 0xad1703e0
+  0xfffffff007f2ed00: .word 0xad1603e0
+  0xfffffff007f2ed04: .word 0xad1503e0
+  0xfffffff007f2ed08: .word 0xad1403e0
+  0xfffffff007f2ed0c: .word 0xad1303e0
+  0xfffffff007f2ed10: .word 0xad1203e0
+  0xfffffff007f2ed14: .word 0xad1103e0
+  0xfffffff007f2ed18: .word 0xad1003e0
+  0xfffffff007f2ed1c: .word 0xad0f03e0
+  0xfffffff007f2ed20: str x31, [x31, #0x1c8]
+  0xfffffff007f2ed24: .word 0xad0b8100
+  0xfffffff007f2ed28: .word 0xad0a8100
+  0xfffffff007f2ed2c: .word 0xad098100
+  0xfffffff007f2ed30: .word 0xad088100
+  0xfffffff007f2ed34: .word 0xad078100
+  0xfffffff007f2ed38: .word 0xad068100
+  0xfffffff007f2ed3c: .word 0xad058100
+  0xfffffff007f2ed40: .word 0xad048100
+  0xfffffff007f2ed44: .word 0xad038100
+  0xfffffff007f2ed48: .word 0xad028100
+  0xfffffff007f2ed4c: .word 0x3c8783e0
+  0xfffffff007f2ed50: .word 0x3c8683e0
+  0xfffffff007f2ed54: .word 0x3c8583e0
+  0xfffffff007f2ed58: .word 0x3c8483e0
+  0xfffffff007f2ed5c: bl #+0x3ffee7604  // -> 0xfffffff407e16360
+  0xfffffff007f2ed60: ldr w8, [x20, #0x18]
+  0xfffffff007f2ed64: cmp w8, #0x7
+  0xfffffff007f2ed68: b.hi #+0xe8  // -> 0xfffffff007f2ee50
+  0xfffffff007f2ed6c: and x22, x31, x0
+  0xfffffff007f2ed70: .word 0x52800268
+  0xfffffff007f2ed74: str w8, [x31, #0x1dc]
+  0xfffffff007f2ed78: adrp x8, #0x1ff0df000  // -> 0xfffffff20700d000
+  0xfffffff007f2ed7c: .word 0xfd46c500
+  0xfffffff007f2ed80: .word 0xfd0193e0
+  0xfffffff007f2ed84: cbz w0, #+0x10  // -> 0xfffffff007f2ed94
+  0xfffffff007f2ed88: ldr x8, [x22, #0x0]
+  0xfffffff007f2ed8c: .word 0xf27ff908
+  0xfffffff007f2ed90: b.ne #+0x8  // -> 0xfffffff007f2ed98
+  0xfffffff007f2ed94: .word 0xd538d088
+  0xfffffff007f2ed98: ldr w8, [x8, #0x5a0]
+  0xfffffff007f2ed9c: tst w8, #0x8008
+  0xfffffff007f2eda0: .word 0x52800108
+  0xfffffff007f2eda4: .word 0x528000b5
+  0xfffffff007f2eda8: .word 0x1a8802a8
+  0xfffffff007f2edac: str w8, [x31, #0x1d8]
+  0xfffffff007f2edb0: ldr x8, [x20, #0x0]
+  0xfffffff007f2edb4: str x8, [x31, #0x1d0]
+  0xfffffff007f2edb8: str w31, [x31, #0x360]
+  0xfffffff007f2edbc: .word 0x910743e8
+  0xfffffff007f2edc0: str x22, [x31, #0x328]
+  0xfffffff007f2edc4: str x8, [x31, #0x330]
+  0xfffffff007f2edc8: .word 0x910743e0
+  0xfffffff007f2edcc: bl #+0x3fffdc028  // -> 0xfffffff407f0adf4
+  0xfffffff007f2edd0: .word 0x35001480
+  0xfffffff007f2edd4: ldr x19, [x31, #0x1f8]
+  0xfffffff007f2edd8: str w21, [x31, #0x44]
+  0xfffffff007f2eddc: adrp x8, #0x1ff0df000  // -> 0xfffffff20700d000
+  0xfffffff007f2ede0: .word 0xfd46c900
+  0xfffffff007f2ede4: .word 0xfd00c7e0
+  0xfffffff007f2ede8: cbz w0, #+0x10  // -> 0xfffffff007f2edf8
+  0xfffffff007f2edec: ldr x8, [x22, #0x0]
+  0xfffffff007f2edf0: .word 0xf27ff908
+  0xfffffff007f2edf4: b.ne #+0x8  // -> 0xfffffff007f2edfc
+  0xfffffff007f2edf8: .word 0xd538d088
+  0xfffffff007f2edfc: ldr w8, [x8, #0x5a0]
+  0xfffffff007f2ee00: tst w8, #0x8008
+  0xfffffff007f2ee04: .word 0x52800108
+  0xfffffff007f2ee08: .word 0x528000a9
+  0xfffffff007f2ee0c: .word 0x1a880128
+  0xfffffff007f2ee10: str w8, [x31, #0x40]
+  0xfffffff007f2ee14: ldr x8, [x20, #0x8]
+  0xfffffff007f2ee18: str x8, [x31, #0x38]
+  0xfffffff007f2ee1c: str w31, [x31, #0x1c8]
+  0xfffffff007f2ee20: .word 0x9100e3e8
+  0xfffffff007f2ee24: .word 0xa91923f6
+  0xfffffff007f2ee28: .word 0x9100e3e0
+  0xfffffff007f2ee2c: bl #+0x3fffdbfc8  // -> 0xfffffff407f0adf4
+  0xfffffff007f2ee30: and x24, x31, x0
+  0xfffffff007f2ee34: .word 0x35000ea0
+  0xfffffff007f2ee38: .word 0xa94657f7
+  0xfffffff007f2ee3c: cbz w0, #+0x1c  // -> 0xfffffff007f2ee58
+  0xfffffff007f2ee40: .word 0x39406288
+  0xfffffff007f2ee44: .word 0x370001a8
+  0xfffffff007f2ee48: .word 0x52800238
+  0xfffffff007f2ee4c: b #+0x48  // -> 0xfffffff007f2ee94
+  0xfffffff007f2ee50: .word 0x528002c0
+  0xfffffff007f2ee54: b #+0x20c  // -> 0xfffffff007f2f060
+  0xfffffff007f2ee58: .word 0x7940e268
+  0xfffffff007f2ee5c: cmp w8, #0x2
+  0xfffffff007f2ee60: b.ne #+0x84  // -> 0xfffffff007f2eee4
+  0xfffffff007f2ee64: ldr x20, [x31, #0x48]
+  0xfffffff007f2ee68: .word 0x9100e3e0
+  0xfffffff007f2ee6c: bl #+0x3fffddd54  // -> 0xfffffff407f0cbc0
+  0xfffffff007f2ee70: .word 0x528002b8
+  0xfffffff007f2ee74: b #+0x184  // -> 0xfffffff007f2eff8
+  0xfffffff007f2ee78: .word 0x7940e268
+  0xfffffff007f2ee7c: cmp w8, #0x2
+  0xfffffff007f2ee80: b.eq #+0x10  // -> 0xfffffff007f2ee90
+  0xfffffff007f2ee84: .word 0x7940e2e9
+  0xfffffff007f2ee88: cmp w9, #0x2
+  0xfffffff007f2ee8c: b.ne #+0x58  // -> 0xfffffff007f2eee4
+  0xfffffff007f2ee90: .word 0x528002b8
+  0xfffffff007f2ee94: ldr x20, [x31, #0x48]
+  0xfffffff007f2ee98: ldr w8, [x31, #0x18c]
+  0xfffffff007f2ee9c: .word 0x36500aa8
+  0xfffffff007f2eea0: ldr x22, [x31, #0x1a0]
+  0xfffffff007f2eea4: str x31, [x31, #0x1a0]
+  0xfffffff007f2eea8: .word 0x12157908
+  0xfffffff007f2eeac: str w8, [x31, #0x18c]
+  0xfffffff007f2eeb0: adrp x8, #0x1ffa45000  // -> 0xfffffff207973000
+  0xfffffff007f2eeb4: .word 0x912a4108
+  0xfffffff007f2eeb8: .word 0xa9406919
+  0xfffffff007f2eebc: .word 0x79406b3b
+  0xfffffff007f2eec0: and x0, x31, x22
+  0xfffffff007f2eec4: and x1, x31, x27
+  0xfffffff007f2eec8: bl #+0x3ffe25d18  // -> 0xfffffff407d54be0
+  0xfffffff007f2eecc: and x0, x31, x25
+  0xfffffff007f2eed0: and x1, x31, x26
+  0xfffffff007f2eed4: and x2, x31, x22
+  0xfffffff007f2eed8: and x3, x31, x27
+  0xfffffff007f2eedc: bl #+0x3ffedeb84  // -> 0xfffffff407e0da60
+  0xfffffff007f2eee0: b #+0x110  // -> 0xfffffff007f2eff0
+  0xfffffff007f2eee4: cmp w8, #0x6
+  0xfffffff007f2eee8: b.ne #+0x10  // -> 0xfffffff007f2eef8
+  0xfffffff007f2eeec: .word 0x7940e668
+  0xfffffff007f2eef0: cmp w8, #0x7
+  0xfffffff007f2eef4: b.ne #+0xe8  // -> 0xfffffff007f2efdc
+  0xfffffff007f2eef8: .word 0x9100e3e8
+  0xfffffff007f2eefc: .word 0x91054119
+  0xfffffff007f2ef00: .word 0x79402285
+  0xfffffff007f2ef04: ldr w6, [x20, #0x18]
+  0xfffffff007f2ef08: and x0, x31, x22
+  0xfffffff007f2ef0c: and x1, x31, x21
+  0xfffffff007f2ef10: and x2, x31, x23
+  0xfffffff007f2ef14: and x3, x31, x19
+  0xfffffff007f2ef18: and x4, x31, x25
+  0xfffffff007f2ef1c: bl #+0x565c00  // -> 0xfffffff008494b1c
+  0xfffffff007f2ef20: and x24, x31, x0
+  0xfffffff007f2ef24: .word 0x350005e0
+  0xfffffff007f2ef28: and x0, x31, x19
+  0xfffffff007f2ef2c: .word 0xd2800001
+  0xfffffff007f2ef30: .word 0x52800042
+  0xfffffff007f2ef34: and x3, x31, x22
+  0xfffffff007f2ef38: bl #+0x3fffee138  // -> 0xfffffff407f1d070
+  0xfffffff007f2ef3c: and x24, x31, x0
+  0xfffffff007f2ef40: .word 0x35000500
+  0xfffffff007f2ef44: cbz w0, #+0x20  // -> 0xfffffff007f2ef64
+  0xfffffff007f2ef48: and x0, x31, x23
+  0xfffffff007f2ef4c: and x1, x31, x21
+  0xfffffff007f2ef50: .word 0x52800202
+  0xfffffff007f2ef54: and x3, x31, x22
+  0xfffffff007f2ef58: bl #+0x3fffee118  // -> 0xfffffff407f1d070
+  0xfffffff007f2ef5c: and x24, x31, x0
+  0xfffffff007f2ef60: .word 0x35fff9a0
+  0xfffffff007f2ef64: and x0, x31, x21
+  0xfffffff007f2ef68: .word 0xd2800001
+  0xfffffff007f2ef6c: .word 0x52800082
+  0xfffffff007f2ef70: and x3, x31, x22
+  0xfffffff007f2ef74: bl #+0x3fffee0fc  // -> 0xfffffff407f1d070
+  0xfffffff007f2ef78: and x24, x31, x0
+  0xfffffff007f2ef7c: .word 0x35000320
+  0xfffffff007f2ef80: .word 0xeb15027f
+  0xfffffff007f2ef84: .word 0x528002c8
+  0xfffffff007f2ef88: .word 0x1a9f0108
+  0xfffffff007f2ef8c: .word 0xeb17027f
+  0xfffffff007f2ef90: .word 0x5a9f1118
+  0xfffffff007f2ef94: .word 0x35000278
+  0xfffffff007f2ef98: ldr w8, [x20, #0x10]
+  0xfffffff007f2ef9c: ldr w9, [x20, #0x18]
+  0xfffffff007f2efa0: adrp x10, #0x22c7000  // -> 0xfffffff00a1f5000
+  0xfffffff007f2efa4: .word 0x911ba14a
+  0xfffffff007f2efa8: .word 0xa9004fea
+  0xfffffff007f2efac: .word 0xa9015ff5
+  0xfffffff007f2efb0: str x25, [x31, #0x20]
+  0xfffffff007f2efb4: .word 0x290527e8
+  0xfffffff007f2efb8: str x22, [x31, #0x30]
+  0xfffffff007f2efbc: ldr x8, [x19, #0xd0]
+  0xfffffff007f2efc0: ldrsw x9, [x10, #0x0]
+  0xfffffff007f2efc4: .word 0xf8697908
+  0xfffffff007f2efc8: .word 0x910003e0
+  0xfffffff007f2efcc: .word 0xd2860f51
+  0xfffffff007f2efd0: .word 0xd73f0911
+  0xfffffff007f2efd4: and x24, x31, x0
+  0xfffffff007f2efd8: b #+0x8  // -> 0xfffffff007f2efe0
+  0xfffffff007f2efdc: .word 0x52800cd8
+  0xfffffff007f2efe0: ldr x20, [x31, #0x48]
+  0xfffffff007f2efe4: .word 0x9100e3e0
+  0xfffffff007f2efe8: bl #+0x3fffddbd8  // -> 0xfffffff407f0cbc0
+  0xfffffff007f2efec: cbz w0, #+0xc  // -> 0xfffffff007f2eff8
+  0xfffffff007f2eff0: and x0, x31, x23
+  0xfffffff007f2eff4: bl #+0x3fffe3ba8  // -> 0xfffffff407f12b9c
+  0xfffffff007f2eff8: and x0, x31, x21
+  0xfffffff007f2effc: bl #+0x3fffe3ba0  // -> 0xfffffff407f12b9c
+  0xfffffff007f2f000: and x0, x31, x20
+  0xfffffff007f2f004: bl #+0x3fffe3b98  // -> 0xfffffff407f12b9c
+  0xfffffff007f2f008: and x0, x31, x19
+  0xfffffff007f2f00c: bl #+0x3fffe3b90  // -> 0xfffffff407f12b9c
+  0xfffffff007f2f010: ldr w8, [x31, #0x324]
+  0xfffffff007f2f014: .word 0x36500228
+  0xfffffff007f2f018: ldr x19, [x31, #0x338]
+  0xfffffff007f2f01c: str x31, [x31, #0x338]
+  0xfffffff007f2f020: .word 0x12157908
+  0xfffffff007f2f024: str w8, [x31, #0x324]
+  0xfffffff007f2f028: adrp x8, #0x1ffa44000  // -> 0xfffffff207973000
+  0xfffffff007f2f02c: .word 0x912a4108
+  0xfffffff007f2f030: .word 0xa9405514
+  0xfffffff007f2f034: .word 0x79406a96
+  0xfffffff007f2f038: and x0, x31, x19
+  0xfffffff007f2f03c: and x1, x31, x22
+  0xfffffff007f2f040: bl #+0x3ffe25ba0  // -> 0xfffffff407d54be0
+  0xfffffff007f2f044: and x0, x31, x20
+  0xfffffff007f2f048: and x1, x31, x21
+  0xfffffff007f2f04c: and x2, x31, x19
+  0xfffffff007f2f050: and x3, x31, x22
+  0xfffffff007f2f054: bl #+0x3ffedea0c  // -> 0xfffffff407e0da60
+  0xfffffff007f2f058: .word 0x3100071f
+  0xfffffff007f2f05c: .word 0x1a9803e0
+  0xfffffff007f2f060: .word 0xf85a83a8
+  0xfffffff007f2f064: adrp x9, #0x22e0000  // -> 0xfffffff00a20f000
+  0xfffffff007f2f068: .word 0x91000129
+  0xfffffff007f2f06c: ldr x9, [x9, #0x0]
+  0xfffffff007f2f070: .word 0xeb08013f
+  0xfffffff007f2f074: b.ne #+0x24  // -> 0xfffffff007f2f098
+  0xfffffff007f2f078: .word 0x910dc3ff
+  0xfffffff007f2f07c: .word 0xa9457bfd
+  0xfffffff007f2f080: .word 0xa9444ff4
+  0xfffffff007f2f084: .word 0xa94357f6
+  0xfffffff007f2f088: .word 0xa9425ff8
+  0xfffffff007f2f08c: .word 0xa94167fa
+  0xfffffff007f2f090: .word 0xa8c66ffc
+  0xfffffff007f2f094: .word 0xd65f0fff
+  0xfffffff007f2f098: bl #+0x3ffe36e34  // -> 0xfffffff407d65ecc
+  0xfffffff007f2f09c: pacibsp
+  0xfffffff007f2f0a0: .word 0xd107c3ff
+  0xfffffff007f2f0a4: .word 0xa91a67fa
+  0xfffffff007f2f0a8: .word 0xa91b5ff8
+  0xfffffff007f2f0ac: .word 0xa91c57f6
+  0xfffffff007f2f0b0: .word 0xa91d4ff4
+  0xfffffff007f2f0b4: .word 0xa91e7bfd
+  0xfffffff007f2f0b8: .word 0x910783fd
+  0xfffffff007f2f0bc: and x19, x31, x1
+  0xfffffff007f2f0c0: adrp x8, #0x22e0000  // -> 0xfffffff00a20f000
+  0xfffffff007f2f0c4: .word 0x91000108
+  0xfffffff007f2f0c8: ldr x8, [x8, #0x0]
+  0xfffffff007f2f0cc: .word 0xf81b83a8
+  0xfffffff007f2f0d0: str x31, [x31, #0x190]
+  0xfffffff007f2f0d4: .word 0x6f00e400
+  0xfffffff007f2f0d8: .word 0xad0b83e0
+  0xfffffff007f2f0dc: .word 0xad0a83e0
+  0xfffffff007f2f0e0: .word 0xad0983e0
+  0xfffffff007f2f0e4: .word 0xad0883e0
+  0xfffffff007f2f0e8: .word 0xad0783e0
+  0xfffffff007f2f0ec: .word 0xad0683e0
+  0xfffffff007f2f0f0: .word 0xad0583e0
+  0xfffffff007f2f0f4: .word 0xad0483e0
+  0xfffffff007f2f0f8: .word 0xad0383e0
+  0xfffffff007f2f0fc: .word 0xad0283e0
+  0xfffffff007f2f100: .word 0xad0183e0
+  0xfffffff007f2f104: .word 0xad0083e0
+  0xfffffff007f2f108: bl #+0x3ffee7258  // -> 0xfffffff407e16360
+  0xfffffff007f2f10c: ldr w8, [x19, #0x20]
+  0xfffffff007f2f110: cmp w8, #0x7
+  0xfffffff007f2f114: b.hi #+0xec  // -> 0xfffffff007f2f200
+  0xfffffff007f2f118: and x20, x31, x0
+  0xfffffff007f2f11c: .word 0x531a0108
+  0xfffffff007f2f120: .word 0x52800269
+  0xfffffff007f2f124: .word 0x5280080a
+  0xfffffff007f2f128: .word 0x72a0020a
+  0xfffffff007f2f12c: and x8, x8, x10
+  0xfffffff007f2f130: str w9, [x31, #0xc]
+  0xfffffff007f2f134: str w8, [x31, #0x154]
+  0xfffffff007f2f138: cbz w0, #+0x10  // -> 0xfffffff007f2f148
+  0xfffffff007f2f13c: ldr x8, [x20, #0x0]
+  0xfffffff007f2f140: .word 0xf27ff908
+  0xfffffff007f2f144: b.ne #+0x8  // -> 0xfffffff007f2f14c
+  0xfffffff007f2f148: .word 0xd538d088
+  0xfffffff007f2f14c: ldr w8, [x8, #0x5a0]
+  0xfffffff007f2f150: tst w8, #0x8008
+  0xfffffff007f2f154: .word 0x52800108
+  0xfffffff007f2f158: .word 0x528000a9
+  0xfffffff007f2f15c: .word 0x1a880128
+  0xfffffff007f2f160: str w8, [x31, #0x8]
+  0xfffffff007f2f164: ldr x8, [x19, #0x8]
+  0xfffffff007f2f168: str x8, [x31, #0x0]
+  0xfffffff007f2f16c: .word 0x910003e8
+  0xfffffff007f2f170: .word 0xa915a3f4
+  0xfffffff007f2f174: ldr w1, [x19, #0x0]
+  0xfffffff007f2f178: .word 0x910003e0
+  0xfffffff007f2f17c: bl #+0x3ffff69d4  // -> 0xfffffff407f25b50
+  0xfffffff007f2f180: and x22, x31, x0
+  0xfffffff007f2f184: .word 0x35000400
+  0xfffffff007f2f188: ldr x21, [x31, #0x28]
+  0xfffffff007f2f18c: ldr w8, [x31, #0x154]
+  0xfffffff007f2f190: .word 0x36500228
+  0xfffffff007f2f194: ldr x22, [x31, #0x168]
+  0xfffffff007f2f198: str x31, [x31, #0x168]
+  0xfffffff007f2f19c: .word 0x12157908
+  0xfffffff007f2f1a0: str w8, [x31, #0x154]
+  0xfffffff007f2f1a4: adrp x8, #0x1ffa44000  // -> 0xfffffff207973000
+  0xfffffff007f2f1a8: .word 0x912a4108
+  0xfffffff007f2f1ac: .word 0xa9406117
+  0xfffffff007f2f1b0: .word 0x79406af9
+  0xfffffff007f2f1b4: and x0, x31, x22
+  0xfffffff007f2f1b8: and x1, x31, x25
+  0xfffffff007f2f1bc: bl #+0x3ffe25a24  // -> 0xfffffff407d54be0
+  0xfffffff007f2f1c0: and x0, x31, x23
+  0xfffffff007f2f1c4: and x1, x31, x24
+  0xfffffff007f2f1c8: and x2, x31, x22
+  0xfffffff007f2f1cc: and x3, x31, x25
+  0xfffffff007f2f1d0: bl #+0x3ffede890  // -> 0xfffffff407e0da60
+  0xfffffff007f2f1d4: ldr w2, [x19, #0x10]
+  0xfffffff007f2f1d8: ldr x3, [x19, #0x18]
+  0xfffffff007f2f1dc: ldr w4, [x19, #0x20]
+  0xfffffff007f2f1e0: and x0, x31, x21
+  0xfffffff007f2f1e4: .word 0x52800001
+  0xfffffff007f2f1e8: and x5, x31, x20
+  0xfffffff007f2f1ec: bl #+0x54  // -> 0xfffffff007f2f240
+  0xfffffff007f2f1f0: and x22, x31, x0
+  0xfffffff007f2f1f4: and x0, x31, x21
+  0xfffffff007f2f1f8: bl #+0x3fffe39a4  // -> 0xfffffff407f12b9c
+  0xfffffff007f2f1fc: b #+0x8  // -> 0xfffffff007f2f204
+  0xfffffff007f2f200: .word 0x528002d6
+  0xfffffff007f2f204: .word 0xf85b83a8
+  0xfffffff007f2f208: adrp x9, #0x22e0000  // -> 0xfffffff00a20f000
+  0xfffffff007f2f20c: .word 0x91000129
+  0xfffffff007f2f210: ldr x9, [x9, #0x0]
+  0xfffffff007f2f214: .word 0xeb08013f
+  0xfffffff007f2f218: b.ne #+0x24  // -> 0xfffffff007f2f23c
+  0xfffffff007f2f21c: and x0, x31, x22
+  0xfffffff007f2f220: .word 0xa95e7bfd
+  0xfffffff007f2f224: .word 0xa95d4ff4
+  0xfffffff007f2f228: .word 0xa95c57f6
+  0xfffffff007f2f22c: .word 0xa95b5ff8
+  0xfffffff007f2f230: .word 0xa95a67fa
+  0xfffffff007f2f234: .word 0x9107c3ff
+  0xfffffff007f2f238: .word 0xd65f0fff
+  0xfffffff007f2f23c: bl #+0x3ffe36c90  // -> 0xfffffff407d65ecc
+  0xfffffff007f2f240: pacibsp
+  0xfffffff007f2f244: .word 0xa9ba6ffc
+  0xfffffff007f2f248: .word 0xa90167fa
+  0xfffffff007f2f24c: .word 0xa9025ff8
+  0xfffffff007f2f250: .word 0xa90357f6
+  0xfffffff007f2f254: .word 0xa9044ff4
+  0xfffffff007f2f258: .word 0xa9057bfd
+  0xfffffff007f2f25c: .word 0x910143fd
+  0xfffffff007f2f260: .word 0xd11643ff
+  0xfffffff007f2f264: and x19, x31, x5
+  0xfffffff007f2f268: and x22, x31, x4
+  0xfffffff007f2f26c: and x25, x31, x1
+  0xfffffff007f2f270: and x20, x31, x0
+  0xfffffff007f2f274: adrp x8, #0x22e0000  // -> 0xfffffff00a20f000
+  0xfffffff007f2f278: .word 0x91000108
+  0xfffffff007f2f27c: ldr x8, [x8, #0x0]
+  0xfffffff007f2f280: .word 0xf81983a8
+  0xfffffff007f2f284: .word 0x910103fb
+  0xfffffff007f2f288: str x31, [x27, #0x530]
+  0xfffffff007f2f28c: .word 0x6f00e400
+  0xfffffff007f2f290: .word 0x3d814b60
+  0xfffffff007f2f294: .word 0x3d814760
+  0xfffffff007f2f298: .word 0x3d814360
+
+Callers in 17.4 (0 total):
+
+Callers in 17.3.1 (0 total):

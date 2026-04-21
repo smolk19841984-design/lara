@@ -1,0 +1,159 @@
+; region fileoff=0x340d511 size=0x200 base_vm=0x000000000339695a
+; hexdump:
+0340d511  5f 6e 76 6d 65 5f 70 70 6c 5f 67 65 74 5f 64 65   _nvme_ppl_get_de
+0340d521  73 63 d1 00 04 29 db 5f 10 1f 5f 6f 73 5f 72 65   sc...)._.._os_re
+0340d531  61 73 6f 6e 5f 61 6c 6c 6f 63 5f 62 75 66 66 65   ason_alloc_buffe
+0340d541  72 5f 6e 6f 62 6c 6f 63 6b d1 00 04 29 dd 5f 10   r_noblock...)._.
+0340d551  11 5f 6f 73 5f 72 65 61 73 6f 6e 5f 63 72 65 61   ._os_reason_crea
+0340d561  74 65 d1 00 04 29 df 5f 10 0f 5f 6f 73 5f 72 65   te...)._.._os_re
+0340d571  61 73 6f 6e 5f 66 72 65 65 d1 00 04 29 e1 5f 10   ason_free...)._.
+0340d581  20 5f 6f 73 5f 72 65 61 73 6f 6e 5f 67 65 74 5f    _os_reason_get_
+0340d591  6b 63 64 61 74 61 5f 64 65 73 63 72 69 70 74 6f   kcdata_descripto
+0340d5a1  72 d1 00 04 29 e3 5e 5f 6f 73 5f 72 65 61 73 6f   r...).^_os_reaso
+0340d5b1  6e 5f 72 65 66 d1 00 04 29 e5 5f 10 1f 5f 6f 73   n_ref...)._.._os
+0340d5c1  5f 72 65 61 73 6f 6e 5f 73 65 74 5f 64 65 73 63   _reason_set_desc
+0340d5d1  72 69 70 74 69 6f 6e 5f 64 61 74 61 d1 00 04 29   ription_data...)
+0340d5e1  e7 5f 10 14 5f 6f 73 5f 72 65 61 73 6f 6e 5f 73   ._.._os_reason_s
+0340d5f1  65 74 5f 66 6c 61 67 73 d1 00 04 29 e9 5f 10 24   et_flags...)._.$
+0340d601  5f 6f 73 5f 76 61 72 69 61 6e 74 5f 68 61 73 5f   _os_variant_has_
+0340d611  69 6e 74 65 72 6e 61 6c 5f 64 69 61 67 6e 6f 73   internal_diagnos
+0340d621  74 69 63 73 d1 00 04 29 eb 5d 5f 70 61 6e 69 63   tics...).]_panic
+0340d631  5f 61 63 74 69 76 65 d1 00 04 29 ed 5f 10 10 5f   _active...)._.._
+0340d641  70 61 6e 69 63 5f 77 69 74 68 5f 64 61 74 61 d1   panic_with_data.
+0340d651  00 04 29 ef 5f 10 13 5f 70 61 6e 69 63 5f 77 69   ..)._.._panic_wi
+0340d661  74 68 5f 6f 70 74 69 6f 6e 73 d1 00 04 29 f1 5d   th_options...).]
+0340d671  5f 70 65 72 73 6f 6e 61 5f 66 69 6e 64 d1 00 04   _persona_find...
+0340d681  29 f3 5f 10 15 5f 70 65 72 73 6f 6e 61 5f 66 69   )._.._persona_fi
+0340d691  6e 64 5f 62 79 5f 74 79 70 65 d1 00 04 29 f5 5c   nd_by_type...).\
+0340d6a1  5f 70 65 72 73 6f 6e 61 5f 67 65 74 d1 00 04 29   _persona_get...)
+0340d6b1  f7 5f 10 0f 5f 70 65 72 73 6f 6e 61 5f 67 65 74   ._.._persona_get
+0340d6c1  5f 69 64 d1 00 04 29 f9 5f 10 11 5f 70 65 72 73   _id...)._.._pers
+0340d6d1  6f 6e 61 5f 67 65 74 5f 74 79 70 65 d1 00 04 29   ona_get_type...)
+0340d6e1  fb 5f 10 10 5f 70 65 72 73 6f 6e 61 5f 67 65 74   ._.._persona_get
+0340d6f1  5f 75 69 64 d1 00 04 29 fd 5f 10 0f 5f 70 65 72   _uid...)._.._per
+0340d701  73 6f 6e 61 5f 6c 6f 6f 6b 75 70 d1 00 04 29 ff   sona_lookup...).
+; disassembly:
+0x000000000339695a: 5f6e766d   ldp d31, d27, [x18, #-0xa0]
+0x000000000339695e: 655f7070   adr x5, #0x347754d
+0x0000000003396962: 6c5f6765   fnmla z12.h, p7/m, z27.h, z7.h
+0x0000000003396966: 745f6465   fnmla z20.h, p7/m, z27.h, z4.h
+
+
+; region fileoff=0x340d793 size=0x200 base_vm=0x0000000003396bdc
+; hexdump:
+0340d793  5f 70 6d 61 70 5f 63 6c 61 69 6d 5f 72 65 73 65   _pmap_claim_rese
+0340d7a3  72 76 65 64 5f 70 70 6c 5f 70 61 67 65 d1 00 04   rved_ppl_page...
+0340d7b3  2a 0b 5f 10 16 5f 70 6d 61 70 5f 63 73 5f 63 6f   *._.._pmap_cs_co
+0340d7c3  6e 66 69 67 75 72 61 74 69 6f 6e d1 00 04 2a 0d   nfiguration...*.
+0340d7d3  5f 10 1c 5f 70 6d 61 70 5f 66 72 65 65 5f 72 65   _.._pmap_free_re
+0340d7e3  73 65 72 76 65 64 5f 70 70 6c 5f 70 61 67 65 d1   served_ppl_page.
+0340d7f3  00 04 2a 0f 5f 10 22 5f 70 6d 61 70 5f 68 61 73   ..*._."_pmap_has
+0340d803  5f 69 6f 66 69 6c 74 65 72 5f 70 72 6f 74 65 63   _iofilter_protec
+0340d813  74 65 64 5f 77 72 69 74 65 d1 00 04 2a 11 5c 5f   ted_write...*.\_
+0340d823  70 6d 61 70 5f 69 6e 5f 70 70 6c d1 00 04 2a 13   pmap_in_ppl...*.
+0340d833  5f 10 1e 5f 70 6d 61 70 5f 69 6f 66 69 6c 74 65   _.._pmap_iofilte
+0340d843  72 5f 70 72 6f 74 65 63 74 65 64 5f 77 72 69 74   r_protected_writ
+0340d853  65 d1 00 04 2a 15 5f 10 22 5f 70 6d 61 70 5f 69   e...*._."_pmap_i
+0340d863  6f 6d 6d 75 5f 61 6c 6c 6f 63 5f 63 6f 6e 74 69   ommu_alloc_conti
+0340d873  67 75 6f 75 73 5f 70 61 67 65 73 d1 00 04 2a 17   guous_pages...*.
+0340d883  5f 10 10 5f 70 6d 61 70 5f 69 6f 6d 6d 75 5f 69   _.._pmap_iommu_i
+0340d893  6e 69 74 d1 00 04 2a 19 5f 10 11 5f 70 6d 61 70   nit...*._.._pmap
+0340d8a3  5f 69 6f 6d 6d 75 5f 69 6f 63 74 6c d1 00 04 2a   _iommu_ioctl...*
+0340d8b3  1b 5f 10 15 5f 70 6d 61 70 5f 69 6f 6d 6d 75 5f   ._.._pmap_iommu_
+0340d8c3  69 6f 76 6d 61 6c 6c 6f 63 d1 00 04 2a 1d 5f 10   iovmalloc...*._.
+0340d8d3  14 5f 70 6d 61 70 5f 69 6f 6d 6d 75 5f 69 6f 76   ._pmap_iommu_iov
+0340d8e3  6d 66 72 65 65 d1 00 04 2a 1f 5f 10 0f 5f 70 6d   mfree...*._.._pm
+0340d8f3  61 70 5f 69 6f 6d 6d 75 5f 6d 61 70 d1 00 04 2a   ap_iommu_map...*
+0340d903  21 5f 10 11 5f 70 6d 61 70 5f 69 6f 6d 6d 75 5f   !_.._pmap_iommu_
+0340d913  75 6e 6d 61 70 d1 00 04 2a 23 5f 10 23 5f 70 6d   unmap...*#_.#_pm
+0340d923  61 70 5f 6c 6f 6f 6b 75 70 5f 69 6e 5f 6c 6f 61   ap_lookup_in_loa
+0340d933  64 65 64 5f 74 72 75 73 74 5f 63 61 63 68 65 73   ded_trust_caches
+0340d943  d1 00 04 2a 25 5f 10 22 5f 70 6d 61 70 5f 6c 6f   ...*%_."_pmap_lo
+0340d953  6f 6b 75 70 5f 69 6e 5f 73 74 61 74 69 63 5f 74   okup_in_static_t
+0340d963  72 75 73 74 5f 63 61 63 68 65 d2 02 31 00 04 2a   rust_cache..1..*
+0340d973  27 2a 28 5f 10 1b 5f 70 6f 72 74 5f 6e 61 6d 65   '*(_.._port_name
+0340d983  5f 74 6f 5f 74 61 73 6b 5f 65 78 74 65 72 6e 61   _to_task_externa
+; disassembly:
+
+
+; region fileoff=0x340d7d6 size=0x200 base_vm=0x0000000003396c1f
+; hexdump:
+0340d7d6  5f 70 6d 61 70 5f 66 72 65 65 5f 72 65 73 65 72   _pmap_free_reser
+0340d7e6  76 65 64 5f 70 70 6c 5f 70 61 67 65 d1 00 04 2a   ved_ppl_page...*
+0340d7f6  0f 5f 10 22 5f 70 6d 61 70 5f 68 61 73 5f 69 6f   ._."_pmap_has_io
+0340d806  66 69 6c 74 65 72 5f 70 72 6f 74 65 63 74 65 64   filter_protected
+0340d816  5f 77 72 69 74 65 d1 00 04 2a 11 5c 5f 70 6d 61   _write...*.\_pma
+0340d826  70 5f 69 6e 5f 70 70 6c d1 00 04 2a 13 5f 10 1e   p_in_ppl...*._..
+0340d836  5f 70 6d 61 70 5f 69 6f 66 69 6c 74 65 72 5f 70   _pmap_iofilter_p
+0340d846  72 6f 74 65 63 74 65 64 5f 77 72 69 74 65 d1 00   rotected_write..
+0340d856  04 2a 15 5f 10 22 5f 70 6d 61 70 5f 69 6f 6d 6d   .*._."_pmap_iomm
+0340d866  75 5f 61 6c 6c 6f 63 5f 63 6f 6e 74 69 67 75 6f   u_alloc_contiguo
+0340d876  75 73 5f 70 61 67 65 73 d1 00 04 2a 17 5f 10 10   us_pages...*._..
+0340d886  5f 70 6d 61 70 5f 69 6f 6d 6d 75 5f 69 6e 69 74   _pmap_iommu_init
+0340d896  d1 00 04 2a 19 5f 10 11 5f 70 6d 61 70 5f 69 6f   ...*._.._pmap_io
+0340d8a6  6d 6d 75 5f 69 6f 63 74 6c d1 00 04 2a 1b 5f 10   mmu_ioctl...*._.
+0340d8b6  15 5f 70 6d 61 70 5f 69 6f 6d 6d 75 5f 69 6f 76   ._pmap_iommu_iov
+0340d8c6  6d 61 6c 6c 6f 63 d1 00 04 2a 1d 5f 10 14 5f 70   malloc...*._.._p
+0340d8d6  6d 61 70 5f 69 6f 6d 6d 75 5f 69 6f 76 6d 66 72   map_iommu_iovmfr
+0340d8e6  65 65 d1 00 04 2a 1f 5f 10 0f 5f 70 6d 61 70 5f   ee...*._.._pmap_
+0340d8f6  69 6f 6d 6d 75 5f 6d 61 70 d1 00 04 2a 21 5f 10   iommu_map...*!_.
+0340d906  11 5f 70 6d 61 70 5f 69 6f 6d 6d 75 5f 75 6e 6d   ._pmap_iommu_unm
+0340d916  61 70 d1 00 04 2a 23 5f 10 23 5f 70 6d 61 70 5f   ap...*#_.#_pmap_
+0340d926  6c 6f 6f 6b 75 70 5f 69 6e 5f 6c 6f 61 64 65 64   lookup_in_loaded
+0340d936  5f 74 72 75 73 74 5f 63 61 63 68 65 73 d1 00 04   _trust_caches...
+0340d946  2a 25 5f 10 22 5f 70 6d 61 70 5f 6c 6f 6f 6b 75   *%_."_pmap_looku
+0340d956  70 5f 69 6e 5f 73 74 61 74 69 63 5f 74 72 75 73   p_in_static_trus
+0340d966  74 5f 63 61 63 68 65 d2 02 31 00 04 2a 27 2a 28   t_cache..1..*'*(
+0340d976  5f 10 1b 5f 70 6f 72 74 5f 6e 61 6d 65 5f 74 6f   _.._port_name_to
+0340d986  5f 74 61 73 6b 5f 65 78 74 65 72 6e 61 6c 5f 10   _task_external_.
+0340d996  12 5f 70 6f 72 74 5f 6e 61 6d 65 5f 74 6f 5f 74   ._port_name_to_t
+0340d9a6  61 73 6b d1 00 04 2a 2a 5f 10 14 5f 70 6f 72 74   ask...**_.._port
+0340d9b6  5f 6e 61 6d 65 5f 74 6f 5f 74 68 72 65 61 64 d1   _name_to_thread.
+0340d9c6  00 04 2a 2c 5f 10 15 5f 70 6f 73 74 5f 73 79 73   ..*,_.._post_sys
+; disassembly:
+
+
+; region fileoff=0x340d821 size=0x200 base_vm=0x0000000003396c6a
+; hexdump:
+0340d821  5c 5f 70 6d 61 70 5f 69 6e 5f 70 70 6c d1 00 04   \_pmap_in_ppl...
+0340d831  2a 13 5f 10 1e 5f 70 6d 61 70 5f 69 6f 66 69 6c   *._.._pmap_iofil
+0340d841  74 65 72 5f 70 72 6f 74 65 63 74 65 64 5f 77 72   ter_protected_wr
+0340d851  69 74 65 d1 00 04 2a 15 5f 10 22 5f 70 6d 61 70   ite...*._."_pmap
+0340d861  5f 69 6f 6d 6d 75 5f 61 6c 6c 6f 63 5f 63 6f 6e   _iommu_alloc_con
+0340d871  74 69 67 75 6f 75 73 5f 70 61 67 65 73 d1 00 04   tiguous_pages...
+0340d881  2a 17 5f 10 10 5f 70 6d 61 70 5f 69 6f 6d 6d 75   *._.._pmap_iommu
+0340d891  5f 69 6e 69 74 d1 00 04 2a 19 5f 10 11 5f 70 6d   _init...*._.._pm
+0340d8a1  61 70 5f 69 6f 6d 6d 75 5f 69 6f 63 74 6c d1 00   ap_iommu_ioctl..
+0340d8b1  04 2a 1b 5f 10 15 5f 70 6d 61 70 5f 69 6f 6d 6d   .*._.._pmap_iomm
+0340d8c1  75 5f 69 6f 76 6d 61 6c 6c 6f 63 d1 00 04 2a 1d   u_iovmalloc...*.
+0340d8d1  5f 10 14 5f 70 6d 61 70 5f 69 6f 6d 6d 75 5f 69   _.._pmap_iommu_i
+0340d8e1  6f 76 6d 66 72 65 65 d1 00 04 2a 1f 5f 10 0f 5f   ovmfree...*._.._
+0340d8f1  70 6d 61 70 5f 69 6f 6d 6d 75 5f 6d 61 70 d1 00   pmap_iommu_map..
+0340d901  04 2a 21 5f 10 11 5f 70 6d 61 70 5f 69 6f 6d 6d   .*!_.._pmap_iomm
+0340d911  75 5f 75 6e 6d 61 70 d1 00 04 2a 23 5f 10 23 5f   u_unmap...*#_.#_
+0340d921  70 6d 61 70 5f 6c 6f 6f 6b 75 70 5f 69 6e 5f 6c   pmap_lookup_in_l
+0340d931  6f 61 64 65 64 5f 74 72 75 73 74 5f 63 61 63 68   oaded_trust_cach
+0340d941  65 73 d1 00 04 2a 25 5f 10 22 5f 70 6d 61 70 5f   es...*%_."_pmap_
+0340d951  6c 6f 6f 6b 75 70 5f 69 6e 5f 73 74 61 74 69 63   lookup_in_static
+0340d961  5f 74 72 75 73 74 5f 63 61 63 68 65 d2 02 31 00   _trust_cache..1.
+0340d971  04 2a 27 2a 28 5f 10 1b 5f 70 6f 72 74 5f 6e 61   .*'*(_.._port_na
+0340d981  6d 65 5f 74 6f 5f 74 61 73 6b 5f 65 78 74 65 72   me_to_task_exter
+0340d991  6e 61 6c 5f 10 12 5f 70 6f 72 74 5f 6e 61 6d 65   nal_.._port_name
+0340d9a1  5f 74 6f 5f 74 61 73 6b d1 00 04 2a 2a 5f 10 14   _to_task...**_..
+0340d9b1  5f 70 6f 72 74 5f 6e 61 6d 65 5f 74 6f 5f 74 68   _port_name_to_th
+0340d9c1  72 65 61 64 d1 00 04 2a 2c 5f 10 15 5f 70 6f 73   read...*,_.._pos
+0340d9d1  74 5f 73 79 73 5f 70 6f 77 65 72 73 6f 75 72 63   t_sys_powersourc
+0340d9e1  65 d1 00 04 2a 2e 5f 10 10 5f 70 72 69 76 5f 63   e...*._.._priv_c
+0340d9f1  68 65 63 6b 5f 63 72 65 64 d1 00 04 2a 30 5f 10   heck_cred...*0_.
+0340da01  1c 5f 70 72 6f 63 5f 61 6c 6c 6f 77 5f 6c 6f 77   ._proc_allow_low
+0340da11  5f 73 70 61 63 65 5f 77 72 69 74 65 73 d1 00 04   _space_writes...
+; disassembly:
+0x0000000003396c6a: 5c5f706d   ldp d28, d23, [x26, #-0x100]
+0x0000000003396c6e: 61705f69   ldpsw x1, x28, [x3, #0xf8]
+0x0000000003396c72: 6e5f7070   adr x14, #0x3477861
+0x0000000003396c76: 6cd10004   mad z12.b, p4/m, z0.b, z11.b
+0x0000000003396c7a: 2a135f10   adr x10, #0x3454ede
+0x0000000003396c7e: 1e5f706d   ldp d30, d23, [x24, #-0x100]
+0x0000000003396c82: 61705f69   ldpsw x1, x28, [x3, #0xf8]
+0x0000000003396c86: 6f66696c   ldnp d15, d25, [x19, #-0x170]
+

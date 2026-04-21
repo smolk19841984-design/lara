@@ -1,0 +1,230 @@
+############################################################
+# Candidate 1: fileoff=0xd59570 vm=0xfffffff007d5d570 score=80
+HEXDUMP:
+fffffff007d5d570  fd 7b bf a9 fd 03 00 91 02 ec 7c 92 40 00 c0 3d   .{........|.@..=
+fffffff007d5d580  03 fe ff 10 62 04 c1 3c 04 0c 40 92 63 00 04 cb   ....b..<..@.c...
+fffffff007d5d590  61 00 c0 3d 00 1c a1 4e 21 00 04 8b 02 00 00 14   a..=...N!.......
+fffffff007d5d5a0  40 0c c1 3c 01 a8 31 6e 23 00 26 1e 43 01 00 34   @..<..1n#.&.C..4
+fffffff007d5d5b0  21 40 00 f1 68 ff ff 54 40 00 00 cb 21 40 00 91   !@..h..T@...!@..
+fffffff007d5d5c0  00 00 01 8b fd 7b c1 a8 ff 0f 5f d6 00 00 80 d2   .....{...._.....
+fffffff007d5d5d0  c0 03 5f d6 21 1c 21 6e 00 34 21 6e 00 1c a2 4e   .._.!.!n.4!n...N
+fffffff007d5d5e0  01 a8 31 6e 23 00 26 1e 40 00 00 cb 3f 00 03 eb   ..1n#.&.@...?...
+fffffff007d5d5f0  21 30 83 9a 00 00 01 8b fd 7b c1 a8 ff 0f 5f d6   !0.......{...._.
+fffffff007d5d600  7f 23 03 d5 fd 7b bf a9 fd 03 00 91 01 ec 7c 92   .#...{........|.
+fffffff007d5d610  20 00 c0 3d 63 f9 ff 10 62 04 c1 3c 02 0c 40 92    ..=c...b..<..@.
+fffffff007d5d620  63 00 02 cb 61 00 c0 3d 00 1c a1 4e 02 00 00 14   c...a..=...N....
+fffffff007d5d630  20 0c c1 3c 01 a8 31 6e 22 00 26 1e a2 ff ff 35    ..<..1n".&....5
+fffffff007d5d640  21 1c 21 6e 00 34 21 6e 00 1c a2 4e 01 a8 31 6e   !.!n.4!n...N..1n
+fffffff007d5d650  22 00 26 1e 20 00 00 cb 00 00 02 8b fd 7b c1 a8   ".&. ........{..
+fffffff007d5d660  ff 0f 5f d6 00 00 00 00 00 00 00 00 00 00 00 00   .._.............
+
+DISASM:
+0xfffffff007d5d570: stp	x29, x30, [sp, #-0x10]!	; fd7bbfa9
+0xfffffff007d5d574: mov	x29, sp	; fd030091
+0xfffffff007d5d578: and	x2, x0, #0xfffffffffffffff0	; 02ec7c92
+0xfffffff007d5d57c: ldr	q0, [x2]	; 4000c03d
+0xfffffff007d5d580: adr	x3, #0xfffffff007d5d540	; 03feff10
+0xfffffff007d5d584: ldr	q2, [x3], #0x10	; 6204c13c
+0xfffffff007d5d588: and	x4, x0, #0xf	; 040c4092
+0xfffffff007d5d58c: sub	x3, x3, x4	; 630004cb
+0xfffffff007d5d590: ldr	q1, [x3]	; 6100c03d
+0xfffffff007d5d594: orr	v0.16b, v0.16b, v1.16b	; 001ca14e
+0xfffffff007d5d598: add	x1, x1, x4	; 2100048b
+0xfffffff007d5d59c: b	#0xfffffff007d5d5a4	; 02000014
+0xfffffff007d5d5a0: ldr	q0, [x2, #0x10]!	; 400cc13c
+0xfffffff007d5d5a4: uminv	b1, v0.16b	; 01a8316e
+0xfffffff007d5d5a8: fmov	w3, s1	; 2300261e
+0xfffffff007d5d5ac: cbz	w3, #0xfffffff007d5d5d4	; 43010034
+0xfffffff007d5d5b0: subs	x1, x1, #0x10	; 214000f1
+0xfffffff007d5d5b4: b.hi	#0xfffffff007d5d5a0	; 68ffff54
+0xfffffff007d5d5b8: sub	x0, x2, x0	; 400000cb
+0xfffffff007d5d5bc: add	x1, x1, #0x10	; 21400091
+0xfffffff007d5d5c0: add	x0, x0, x1	; 0000018b
+0xfffffff007d5d5c4: ldp	x29, x30, [sp], #0x10	; fd7bc1a8
+0xfffffff007d5d5c8: retab		; ff0f5fd6
+0xfffffff007d5d5cc: mov	x0, #0	; 000080d2
+0xfffffff007d5d5d0: ret		; c0035fd6
+
+ADRP hits:
+############################################################
+# Candidate 2: fileoff=0xd59248 vm=0xfffffff007d5d248 score=78
+HEXDUMP:
+fffffff007d5d248  fd 7b bf a9 fd 03 00 91 00 10 40 f9 24 42 3b d5   .{........@.$B;.
+fffffff007d5d258  df 47 03 d5 e1 03 1e aa d8 fc ff 97 fe 03 01 aa   .G..............
+fffffff007d5d268  1f 00 00 91 bf 40 00 d5 24 42 1b d5 bf 03 00 91   .....@..$B......
+fffffff007d5d278  fd 7b c1 a8 ff 0f 5f d6 21 30 c0 9a 5f 04 7e f2   .{...._.!0.._.~.
+fffffff007d5d288  41 00 00 54 42 f8 62 92 41 30 c1 9a 61 30 c1 9a   A..TB.b.A0..a0..
+fffffff007d5d298  81 30 c1 9a a1 30 c1 9a 01 94 00 f9 c0 03 5f d6   .0...0........_.
+fffffff007d5d2a8  06 94 40 f9 21 30 c0 9a 5f 04 7e f2 41 00 00 54   ..@.!0.._.~.A..T
+fffffff007d5d2b8  42 f8 62 92 41 30 c1 9a 61 30 c1 9a 81 30 c1 9a   B.b.A0..a0...0..
+fffffff007d5d2c8  a1 30 c1 9a 3f 00 06 eb 41 00 00 54 c0 03 5f d6   .0..?...A..T.._.
+fffffff007d5d2d8  e1 03 00 aa a0 00 00 10 fd 7b bf a9 fd 03 00 91   .........{......
+fffffff007d5d2e8  85 05 1d 94 00 00 20 d4 4a 4f 50 20 48 61 73 68   ...... .JOP Hash
+fffffff007d5d2f8  20 4d 69 73 6d 61 74 63 68 20 44 65 74 65 63 74    Mismatch Detect
+fffffff007d5d308  65 64 20 28 50 43 2c 20 43 50 53 52 2c 20 6f 72   ed (PC, CPSR, or
+fffffff007d5d318  20 4c 52 20 63 6f 72 72 75 70 74 69 6f 6e 29 00    LR corruption).
+fffffff007d5d328  fd 7b bf a9 fd 03 00 91 e1 03 00 aa 60 00 00 10   .{..........`...
+fffffff007d5d338  71 05 1d 94 00 00 20 d4 54 68 72 65 61 64 20 73   q..... .Thread s
+
+DISASM:
+0xfffffff007d5d248: stp	x29, x30, [sp, #-0x10]!	; fd7bbfa9
+0xfffffff007d5d24c: mov	x29, sp	; fd030091
+0xfffffff007d5d250: ldr	x0, [x0, #0x20]	; 001040f9
+0xfffffff007d5d254: mrs	x4, daif	; 24423bd5
+0xfffffff007d5d258: msr	daifset, #7	; df4703d5
+0xfffffff007d5d25c: mov	x1, x30	; e1031eaa
+0xfffffff007d5d260: bl	#0xfffffff007d5c5c0	; d8fcff97
+0xfffffff007d5d264: mov	x30, x1	; fe0301aa
+0xfffffff007d5d268: mov	sp, x0	; 1f000091
+0xfffffff007d5d26c: msr	spsel, #0	; bf4000d5
+0xfffffff007d5d270: msr	daif, x4	; 24421bd5
+0xfffffff007d5d274: mov	sp, x29	; bf030091
+0xfffffff007d5d278: ldp	x29, x30, [sp], #0x10	; fd7bc1a8
+0xfffffff007d5d27c: retab		; ff0f5fd6
+0xfffffff007d5d280: pacga	x1, x1, x0	; 2130c09a
+0xfffffff007d5d284: tst	x2, #0xc	; 5f047ef2
+0xfffffff007d5d288: b.ne	#0xfffffff007d5d290	; 41000054
+0xfffffff007d5d28c: and	x2, x2, #0xffffffffdfffffff	; 42f86292
+0xfffffff007d5d290: pacga	x1, x2, x1	; 4130c19a
+0xfffffff007d5d294: pacga	x1, x3, x1	; 6130c19a
+0xfffffff007d5d298: pacga	x1, x4, x1	; 8130c19a
+0xfffffff007d5d29c: pacga	x1, x5, x1	; a130c19a
+0xfffffff007d5d2a0: str	x1, [x0, #0x128]	; 019400f9
+0xfffffff007d5d2a4: ret		; c0035fd6
+
+ADRP hits:
+############################################################
+# Candidate 3: fileoff=0x103c788 vm=0xfffffff008040788 score=78
+HEXDUMP:
+fffffff008040788  fd 7b bf a9 fd 03 00 91 08 00 40 b9 1f 05 00 71   .{........@....q
+fffffff008040798  01 01 00 54 00 04 40 f9 fd 7b c1 a8 ff 23 03 d5   ...T..@..{...#..
+fffffff0080407a8  d0 07 1e ca 50 00 f0 b6 20 8e 38 d4 11 8b 07 14   ....P... .8.....
+fffffff0080407b8  1f 09 00 71 81 00 00 54 00 00 80 52 fd 7b c1 a8   ...q...T...R.{..
+fffffff0080407c8  ff 0f 5f d6 60 81 ff 90 00 48 32 91 61 81 ff 90   .._.`....H2.a...
+fffffff0080407d8  21 c8 27 91 42 35 80 52 0d 7c 11 94 5f 24 03 d5   !.'.B5.R.|.._$..
+fffffff0080407e8  2c 08 40 f9 8a f9 7f 92 9f 01 00 f1 44 19 40 fa   ,.@.........D.@.
+fffffff0080407f8  81 03 00 54 08 00 40 f9 09 09 40 f9 2a f9 7f 92   ...T..@...@.*...
+fffffff008040808  3f 01 00 f1 e9 03 8a 9a 09 09 00 f9 c0 03 5f d6   ?............._.
+fffffff008040818  cb f9 7f 92 df 01 00 f1 eb 03 8b 9a ab 09 00 f9   ................
+fffffff008040828  4b 09 40 f9 6c f9 7f 92 7f 01 00 f1 eb 03 8c 9a   K.@.l...........
+fffffff008040838  4b 09 00 f9 0a 09 40 f9 5f 01 00 f1 ea 03 8a 9a   K.....@._.......
+fffffff008040848  4a 01 40 b2 0a 09 00 f9 2c 09 40 f9 8a f9 7f 92   J.@.....,.@.....
+fffffff008040858  9f 01 00 f1 44 19 40 fa e1 03 09 aa c0 fc ff 54   ....D.@........T
+fffffff008040868  4b 09 40 f9 8b fc 07 36 69 f9 7f 92 7f 01 00 f1   K.@....6i.......
+fffffff008040878  e8 03 89 9a 0d 01 40 f9 bf 01 0a eb 60 01 00 54   ......@.....`..T
+
+DISASM:
+0xfffffff008040788: stp	x29, x30, [sp, #-0x10]!	; fd7bbfa9
+0xfffffff00804078c: mov	x29, sp	; fd030091
+0xfffffff008040790: ldr	w8, [x0]	; 080040b9
+0xfffffff008040794: cmp	w8, #1	; 1f050071
+0xfffffff008040798: b.ne	#0xfffffff0080407b8	; 01010054
+0xfffffff00804079c: ldr	x0, [x0, #8]	; 000440f9
+0xfffffff0080407a0: ldp	x29, x30, [sp], #0x10	; fd7bc1a8
+0xfffffff0080407a4: autibsp		; ff2303d5
+0xfffffff0080407a8: eor	x16, x30, x30, lsl #1	; d0071eca
+0xfffffff0080407ac: tbz	x16, #0x3e, #0xfffffff0080407b4	; 5000f0b6
+0xfffffff0080407b0: brk	#0xc471	; 208e38d4
+0xfffffff0080407b4: b	#0xfffffff0082233f8	; 118b0714
+0xfffffff0080407b8: cmp	w8, #2	; 1f090071
+0xfffffff0080407bc: b.ne	#0xfffffff0080407cc	; 81000054
+0xfffffff0080407c0: mov	w0, #0	; 00008052
+0xfffffff0080407c4: ldp	x29, x30, [sp], #0x10	; fd7bc1a8
+0xfffffff0080407c8: retab		; ff0f5fd6
+0xfffffff0080407cc: adrp	x0, #0xfffffff00706c000	; 6081ff90
+0xfffffff0080407d0: add	x0, x0, #0xc92	; 00483291
+0xfffffff0080407d4: adrp	x1, #0xfffffff00706c000	; 6181ff90
+0xfffffff0080407d8: add	x1, x1, #0x9f2	; 21c82791
+0xfffffff0080407dc: mov	w2, #0x1aa	; 42358052
+0xfffffff0080407e0: bl	#0xfffffff00849f814	; 0d7c1194
+0xfffffff0080407e4: bti	c	; 5f2403d5
+0xfffffff0080407e8: ldr	x12, [x1, #0x10]	; 2c0840f9
+0xfffffff0080407ec: and	x10, x12, #0xfffffffffffffffe	; 8af97f92
+0xfffffff0080407f0: cmp	x12, #0	; 9f0100f1
+0xfffffff0080407f4: ccmp	x10, #0, #4, ne	; 441940fa
+0xfffffff0080407f8: b.ne	#0xfffffff008040868	; 81030054
+0xfffffff0080407fc: ldr	x8, [x0]	; 080040f9
+0xfffffff008040800: ldr	x9, [x8, #0x10]	; 090940f9
+0xfffffff008040804: and	x10, x9, #0xfffffffffffffffe	; 2af97f92
+0xfffffff008040808: cmp	x9, #0	; 3f0100f1
+0xfffffff00804080c: csel	x9, xzr, x10, eq	; e9038a9a
+0xfffffff008040810: str	x9, [x8, #0x10]	; 090900f9
+0xfffffff008040814: ret		; c0035fd6
+
+ADRP hits:
+{'addr': 18446744005124556748, 'op': 'x0, #0xfffffff00706c000'}
+{'addr': 18446744005124556756, 'op': 'x1, #0xfffffff00706c000'}
+############################################################
+# Candidate 4: fileoff=0x16f56bc vm=0xfffffff0086f96bc score=78
+HEXDUMP:
+fffffff0086f96bc  fd 7b bf a9 fd 03 00 91 00 7c 45 f9 45 74 02 94   .{.......|E.Et..
+fffffff0086f96cc  00 00 80 52 fd 7b c1 a8 ff 0f 5f d6 5f 24 03 d5   ...R.{...._._$..
+fffffff0086f96dc  3f 00 02 71 2c 01 00 54 08 60 00 91 09 80 10 91   ?..q,..T.`......
+fffffff0086f96ec  5f 04 00 71 08 01 89 9a 08 d9 61 f8 1f 01 00 f1   _..q......a.....
+fffffff0086f96fc  e0 07 9f 1a c0 03 5f d6 00 00 80 52 c0 03 5f d6   ......_....R.._.
+fffffff0086f970c  5f 24 03 d5 3f 00 02 71 28 01 00 54 08 60 00 91   _$..?..q(..T.`..
+fffffff0086f971c  09 80 10 91 5f 04 00 71 08 01 89 9a 08 59 61 f8   ...._..q.....Ya.
+fffffff0086f972c  68 00 00 b4 00 81 40 b9 c0 03 5f d6 00 00 80 52   h.....@..._....R
+fffffff0086f973c  c0 03 5f d6 7f 23 03 d5 f4 4f be a9 fd 7b 01 a9   .._..#...O...{..
+fffffff0086f974c  fd 43 00 91 3f 58 00 71 68 0b 00 54 f3 03 02 aa   .C..?X.qh..T....
+fffffff0086f975c  f4 03 00 aa f0 03 01 2a 1f 5a 00 f1 10 92 9f 9a   .......*.Z......
+fffffff0086f976c  11 00 00 90 31 52 23 91 30 7a b0 b8 11 00 00 10   ....1R#.0z......
+fffffff0086f977c  30 02 10 8b 00 02 1f d6 9f 24 03 d5 a8 01 80 52   0........$.....R
+fffffff0086f978c  4c 00 00 14 9f 24 03 d5 e0 03 14 aa e1 03 13 aa   L....$..........
+fffffff0086f979c  fd 7b 41 a9 f4 4f c2 a8 ff 23 03 d5 d0 07 1e ca   .{A..O...#......
+fffffff0086f97ac  50 00 f0 b6 20 8e 38 d4 b5 f6 ff 17 9f 24 03 d5   P... .8......$..
+
+DISASM:
+0xfffffff0086f96bc: stp	x29, x30, [sp, #-0x10]!	; fd7bbfa9
+0xfffffff0086f96c0: mov	x29, sp	; fd030091
+0xfffffff0086f96c4: ldr	x0, [x0, #0xaf8]	; 007c45f9
+0xfffffff0086f96c8: bl	#0xfffffff0087967dc	; 45740294
+0xfffffff0086f96cc: mov	w0, #0	; 00008052
+0xfffffff0086f96d0: ldp	x29, x30, [sp], #0x10	; fd7bc1a8
+0xfffffff0086f96d4: retab		; ff0f5fd6
+0xfffffff0086f96d8: bti	c	; 5f2403d5
+0xfffffff0086f96dc: cmp	w1, #0x80	; 3f000271
+0xfffffff0086f96e0: b.gt	#0xfffffff0086f9704	; 2c010054
+0xfffffff0086f96e4: add	x8, x0, #0x18	; 08600091
+0xfffffff0086f96e8: add	x9, x0, #0x420	; 09801091
+0xfffffff0086f96ec: cmp	w2, #1	; 5f040071
+0xfffffff0086f96f0: csel	x8, x8, x9, eq	; 0801899a
+0xfffffff0086f96f4: ldr	x8, [x8, w1, sxtw #3]	; 08d961f8
+0xfffffff0086f96f8: cmp	x8, #0	; 1f0100f1
+0xfffffff0086f96fc: cset	w0, ne	; e0079f1a
+0xfffffff0086f9700: ret		; c0035fd6
+
+ADRP hits:
+############################################################
+# Candidate 5: fileoff=0x1ac995c vm=0xfffffff008acd95c score=78
+HEXDUMP:
+fffffff008acd95c  fd 7b bf a9 fd 03 00 91 08 00 80 12 3f 00 08 eb   .{..........?...
+fffffff008acd96c  21 30 88 9a 95 01 00 94 e0 03 00 2a fd 7b c1 a8   !0.........*.{..
+fffffff008acd97c  ff 23 03 d5 c0 03 5f d6 5f 24 03 d5 00 10 84 52   .#...._._$.....R
+fffffff008acd98c  c0 03 5f d6 7f 23 03 d5 fd 7b bf a9 fd 03 00 91   .._..#...{......
+fffffff008acd99c  2e 01 00 94 e0 03 00 2a fd 7b c1 a8 ff 0f 5f d6   .......*.{...._.
+fffffff008acd9ac  5f 24 03 d5 08 00 40 b9 08 6d 04 12 08 51 53 51   _$....@..m...QSQ
+fffffff008acd9bc  1f 69 09 71 e0 17 9f 1a c0 03 5f d6 00 00 00 00   .i.q......_.....
+fffffff008acd9cc  00 00 00 00 7f 23 03 d5 fd 7b bf a9 fd 03 00 91   .....#...{......
+fffffff008acd9dc  f3 0f 1f f8 0c 00 00 90 8c c1 2b 91 08 3c 02 0e   ..........+..<..
+fffffff008acd9ec  09 3c 06 0e 0a 3c 0a 0e 0b 3c 0e 0e f3 03 05 aa   .<...<...<......
+fffffff008acd9fc  65 00 40 f9 66 08 40 b9 87 00 40 f9 28 78 68 b8   e.@.f.@...@.(xh.
+fffffff008acda0c  29 78 69 b8 2a 78 6a b8 2b 78 6b b8 0d 1d 18 12   )xi.*xj.+xk.....
+fffffff008acda1c  2e 1d 18 12 4f 1d 18 12 70 1d 18 12 cd 21 4d 0b   ....O...p....!M.
+fffffff008acda2c  ee 07 80 52 10 22 4f 0b ad 41 10 0b ce 01 06 4b   ...R."O..A.....K
+fffffff008acda3c  0d 44 00 b8 cf 71 1d 72 40 01 00 54 e7 0c 4f cb   .D...q.r@..T..O.
+fffffff008acda4c  ff 00 13 eb 83 04 00 54 8e 79 6f f8 ed 00 40 f9   .......T.yo...@.
+
+DISASM:
+0xfffffff008acd95c: stp	x29, x30, [sp, #-0x10]!	; fd7bbfa9
+0xfffffff008acd960: mov	x29, sp	; fd030091
+0xfffffff008acd964: mov	w8, #-1	; 08008012
+0xfffffff008acd968: cmp	x1, x8	; 3f0008eb
+0xfffffff008acd96c: csel	x1, x1, x8, lo	; 2130889a
+0xfffffff008acd970: bl	#0xfffffff008acdfc4	; 95010094
+0xfffffff008acd974: mov	w0, w0	; e003002a
+0xfffffff008acd978: ldp	x29, x30, [sp], #0x10	; fd7bc1a8
+0xfffffff008acd97c: autibsp		; ff2303d5
+0xfffffff008acd980: ret		; c0035fd6
+
+ADRP hits:

@@ -1,0 +1,75 @@
+; region fileoff=0x340d511 size=0x2000 base_vm=0x000000000339695a
+; read file window:
+; start_fileoff=0x340c511 end_fileoff=0x340f511 prologue_rel=None
+; hexdump around target:
+0340d4d1  d1 00 04 29 d5 5f 10 13 5f 6e 66 73 5f 72 65 67   ...)._.._nfs_reg
+0340d4e1  69 73 74 65 72 5f 68 6f 6f 6b 73 d1 00 04 29 d7   ister_hooks...).
+0340d4f1  5f 10 15 5f 6e 66 73 5f 75 6e 72 65 67 69 73 74   _.._nfs_unregist
+0340d501  65 72 5f 68 6f 6f 6b 73 d1 00 04 29 d9 5f 10 12   er_hooks...)._..
+0340d511  5f 6e 76 6d 65 5f 70 70 6c 5f 67 65 74 5f 64 65   _nvme_ppl_get_de
+0340d521  73 63 d1 00 04 29 db 5f 10 1f 5f 6f 73 5f 72 65   sc...)._.._os_re
+0340d531  61 73 6f 6e 5f 61 6c 6c 6f 63 5f 62 75 66 66 65   ason_alloc_buffe
+0340d541  72 5f 6e 6f 62 6c 6f 63 6b d1 00 04 29 dd 5f 10   r_noblock...)._.
+; disassembly:
+0x000000000339695a: ldp	d31, d27, [x18, #-0xa0]	; 5f6e766d
+0x000000000339695e: adr	x5, #0x347754d	; 655f7070
+0x0000000003396962: fnmla	z12.h, p7/m, z27.h, z7.h	; 6c5f6765
+0x0000000003396966: fnmla	z20.h, p7/m, z27.h, z4.h	; 745f6465
+
+================================================================================
+
+; region fileoff=0x340d793 size=0x2000 base_vm=0x0000000003396bdc
+; read file window:
+; start_fileoff=0x340c793 end_fileoff=0x340f793 prologue_rel=None
+; hexdump around target:
+0340d753  64 5d 5f 70 66 66 69 6e 64 64 6f 6d 61 69 6e d2   d]_pffinddomain.
+0340d763  02 31 00 04 2a 06 2a 07 5f 10 10 5f 70 66 66 69   .1..*.*._.._pffi
+0340d773  6e 64 70 72 6f 74 6f 5f 6f 6c 64 5c 5f 70 66 66   ndproto_old\_pff
+0340d783  69 6e 64 70 72 6f 74 6f d1 00 04 2a 09 5f 10 1d   indproto...*._..
+0340d793  5f 70 6d 61 70 5f 63 6c 61 69 6d 5f 72 65 73 65   _pmap_claim_rese
+0340d7a3  72 76 65 64 5f 70 70 6c 5f 70 61 67 65 d1 00 04   rved_ppl_page...
+0340d7b3  2a 0b 5f 10 16 5f 70 6d 61 70 5f 63 73 5f 63 6f   *._.._pmap_cs_co
+0340d7c3  6e 66 69 67 75 72 61 74 69 6f 6e d1 00 04 2a 0d   nfiguration...*.
+; disassembly:
+
+================================================================================
+
+; region fileoff=0x340d7d6 size=0x2000 base_vm=0x0000000003396c1f
+; read file window:
+; start_fileoff=0x340c7d6 end_fileoff=0x340f7d6 prologue_rel=None
+; hexdump around target:
+0340d796  61 70 5f 63 6c 61 69 6d 5f 72 65 73 65 72 76 65   ap_claim_reserve
+0340d7a6  64 5f 70 70 6c 5f 70 61 67 65 d1 00 04 2a 0b 5f   d_ppl_page...*._
+0340d7b6  10 16 5f 70 6d 61 70 5f 63 73 5f 63 6f 6e 66 69   .._pmap_cs_confi
+0340d7c6  67 75 72 61 74 69 6f 6e d1 00 04 2a 0d 5f 10 1c   guration...*._..
+0340d7d6  5f 70 6d 61 70 5f 66 72 65 65 5f 72 65 73 65 72   _pmap_free_reser
+0340d7e6  76 65 64 5f 70 70 6c 5f 70 61 67 65 d1 00 04 2a   ved_ppl_page...*
+0340d7f6  0f 5f 10 22 5f 70 6d 61 70 5f 68 61 73 5f 69 6f   ._."_pmap_has_io
+0340d806  66 69 6c 74 65 72 5f 70 72 6f 74 65 63 74 65 64   filter_protected
+; disassembly:
+
+================================================================================
+
+; region fileoff=0x340d821 size=0x2000 base_vm=0x0000000003396c6a
+; read file window:
+; start_fileoff=0x340c821 end_fileoff=0x340f821 prologue_rel=None
+; hexdump around target:
+0340d7e1  72 65 73 65 72 76 65 64 5f 70 70 6c 5f 70 61 67   reserved_ppl_pag
+0340d7f1  65 d1 00 04 2a 0f 5f 10 22 5f 70 6d 61 70 5f 68   e...*._."_pmap_h
+0340d801  61 73 5f 69 6f 66 69 6c 74 65 72 5f 70 72 6f 74   as_iofilter_prot
+0340d811  65 63 74 65 64 5f 77 72 69 74 65 d1 00 04 2a 11   ected_write...*.
+0340d821  5c 5f 70 6d 61 70 5f 69 6e 5f 70 70 6c d1 00 04   \_pmap_in_ppl...
+0340d831  2a 13 5f 10 1e 5f 70 6d 61 70 5f 69 6f 66 69 6c   *._.._pmap_iofil
+0340d841  74 65 72 5f 70 72 6f 74 65 63 74 65 64 5f 77 72   ter_protected_wr
+0340d851  69 74 65 d1 00 04 2a 15 5f 10 22 5f 70 6d 61 70   ite...*._."_pmap
+; disassembly:
+0x0000000003396c6a: ldp	d28, d23, [x26, #-0x100]	; 5c5f706d
+0x0000000003396c6e: ldpsw	x1, x28, [x3, #0xf8]	; 61705f69
+0x0000000003396c72: adr	x14, #0x3477861	; 6e5f7070
+0x0000000003396c76: mad	z12.b, p4/m, z0.b, z11.b	; 6cd10004
+0x0000000003396c7a: adr	x10, #0x3454ede	; 2a135f10
+0x0000000003396c7e: ldp	d30, d23, [x24, #-0x100]	; 1e5f706d
+0x0000000003396c82: ldpsw	x1, x28, [x3, #0xf8]	; 61705f69
+0x0000000003396c86: ldnp	d15, d25, [x19, #-0x170]	; 6f66696c
+
+================================================================================

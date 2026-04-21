@@ -1,0 +1,296 @@
+======================================================================
+SANDBOX BYPASS VECTOR ANALYSIS — iPad8,9 iOS 17+
+======================================================================
+
+── TIER 1: ПОЛНЫЙ ОБХОД SANDBOX ─────────────────────────────────────
+Эти entitlement дают полный обход всех sandbox-политик.
+  com.apple.private.amfi.can-execute-cdhash
+    -> Вектор: добавить в entitlements.plist приложения
+  com.apple.private.security.no-sandbox
+    -> Вектор: добавить в entitlements.plist приложения
+  com.apple.private.amfi.can-execute-cdhash
+    -> Вектор: добавить в entitlements.plist приложения
+
+── TIER 2: ЧАСТИЧНЫЙ ОБХОД (STORAGE / PATH EXCEPTIONS) ─────────────
+Эти entitlement дают доступ к конкретным путям вне sandbox.
+  [storage-exempt] com.apple.private.security.storage-exempt.heritable
+  [oop-jit] com.apple.private.oop-jit.loader
+  [core-repair] com.apple.private.core-repair
+  [bindfs] com.apple.private.bindfs-allow
+  [oop-jit] com.apple.private.oop-jit.loader
+  [oop-jit] ENTITLEMENT:com.apple.private.oop-jit.loader
+  [exception.files] com.apple.security.exception.files.home-relative-path.read-write
+  [exception.files] com.apple.security.exception.files.absolute-path.read-write
+  [exception.files] com.apple.security.exception.files.home-relative-path.read-only
+  [exception.files] com.apple.security.exception.files.absolute-path.read-only
+  [exception.iokit] ENTITLEMENT:com.apple.security.exception.iokit-user-client-class
+  [exception.files] com.apple.security.exception.files.absolute-path.read-write
+  [exception.files] com.apple.security.exception.files.home-relative-path.read-write
+  [exception.files] com.apple.security.exception.files.absolute-path.read-only
+  [exception.files] com.apple.security.exception.files.home-relative-path.read-only
+  [exception.iokit] com.apple.security.exception.iokit-user-client-class
+  [exception.mach] com.apple.security.exception.mach-lookup.global-name
+  [exception.mach] com.apple.security.exception.mach-lookup.local-name
+  [exception.mach] com.apple.security.exception.mach-register.local-name
+  [exception.mach] com.apple.security.exception.mach-register.global-name
+  [exception.sysctl] com.apple.security.exception.sysctl.read-write
+  [exception.sysctl] com.apple.security.exception.sysctl.read-only
+  [exception.iokit] ENTITLEMENT:com.apple.security.exception.iokit-user-client-class
+
+── ЗАПИСЫВАЕМЫЕ ПУТИ (доступны из sandbox или через bypass) ─────────
+
+── UNENFORCED VIOLATIONS (потенциально неисправленные пути) ─────────
+Apple сама логирует эти нарушения как 'unenforced' — т.е. sandbox
+ЗНАЕТ о нарушении, но НЕ БЛОКИРУЕТ его. Это bypass.
+  !! Unenforced user home directory access violation (rdar://72823536)
+     -> Вектор: попытаться воспроизвести условие нарушения
+  !! Unenforced REVERSE EDS access violation
+     -> Вектор: попытаться воспроизвести условие нарушения
+  !! Unenforced EDS access violation
+     -> Вектор: попытаться воспроизвести условие нарушения
+
+── SANDBOX OPERATIONS (исчерпывающий список) ────────────────────────
+  appleevent-send
+  file*
+  file-chroot
+  file-clone
+  file-ioctl
+  file-issue-extension
+  file-link
+  file-lock
+  file-map-executable
+  file-mknod
+  file-mount
+  file-mount-update
+  file-read*
+  file-read-data
+  file-read-metadata
+  file-read-xattr
+  file-revoke
+  file-search
+  file-test-existence
+  file-unmount
+  file-write*
+  file-write-acl
+  file-write-create
+  file-write-data
+  file-write-finderinfo
+  file-write-flags
+  file-write-mode
+  file-write-owner
+  file-write-setugid
+  file-write-times
+  file-write-unlink
+  file-write-xattr
+  iokit*
+  iokit-async-external-method
+  iokit-external-method
+  iokit-external-trap
+  iokit-get-properties
+  iokit-issue-extension
+  iokit-open*
+  iokit-open-service
+  iokit-open-user-client
+  iokit-set-properties
+  ipc*
+  ipc-posix*
+  ipc-posix-issue-extension
+  ipc-posix-sem*
+  ipc-posix-sem-create
+  ipc-posix-sem-open
+  ipc-posix-sem-post
+  ipc-posix-sem-unlink
+  ipc-posix-sem-wait
+  ipc-posix-shm*
+  ipc-posix-shm-read-data
+  ipc-posix-shm-write*
+  ipc-posix-shm-write-create
+  ipc-posix-shm-write-data
+  ipc-posix-shm-write-unlink
+  ipc-sysv*
+  ipc-sysv-msg
+  ipc-sysv-sem
+  ipc-sysv-shm
+  mach*
+  mach-bootstrap
+  mach-cross-domain-lookup
+  mach-derive-port
+  mach-host*
+  mach-host-exception-port-set
+  mach-host-special-port-set
+  mach-issue-extension
+  mach-kernel-endpoint
+  mach-lookup
+  mach-message-send
+  mach-priv*
+  mach-priv-host-port
+  mach-priv-task-port
+  mach-register
+  mach-task*
+  mach-task-inspect
+  mach-task-name
+  mach-task-read
+  mach-task-special-port*
+  mach-task-special-port-get
+  mach-task-special-port-set
+  network*
+  network-bind
+  network-filter
+  network-inbound
+  network-outbound
+  process*
+  process-codesigning
+  process-exec*
+  process-exec-interpreter
+  process-exec-update-label
+  process-fork
+  process-info*
+  process-info-codesignature
+  process-info-dirtycontrol
+  process-info-ledger
+  process-info-listpids
+  process-info-pidfdinfo
+  process-info-pidfileportinfo
+  process-info-pidinfo
+  process-info-rusage
+  process-info-setcontrol
+  process-legacy-codesigning*
+  process-legacy-codesigning-blob-get
+  process-legacy-codesigning-cdhash-get
+  process-legacy-codesigning-entitlements-blob-get
+  process-legacy-codesigning-entitlements-der-blob-get
+  process-legacy-codesigning-identity-get
+  process-legacy-codesigning-status*
+  process-legacy-codesigning-status-get
+  process-legacy-codesigning-status-set
+  process-legacy-codesigning-teamid-get
+  process-legacy-codesigning-text-offset-get
+  sysctl*
+  sysctl-read
+  sysctl-write
+  system*
+  system-acct
+  system-audit
+  system-automount
+  system-debug
+  system-fcntl
+  system-fsctl
+  system-info
+  system-kext*
+  system-kext-load
+  system-kext-query
+  system-kext-unload
+  system-mac*
+  system-mac-label
+  system-mac-syscall
+  system-memorystatus-control
+  system-necp-client-action
+  system-nfssvc
+  system-package-check
+  system-privilege
+  system-reboot
+  system-sched
+  system-set-time
+  system-socket
+  system-suspend-resume
+  system-swap
+
+── LOG СТРОКИ (kernel messages при violations) ──────────────────────
+  "sandbox mask count underflow" @%s:%d
+  sandbox.syscallmasks
+  "sandbox mask count overflow" @%s:%d
+  sandbox
+  invalid sandbox profile configuration
+  failed to allocate sandbox
+  forbidden-sandbox-reinit
+  "%s: mac_policy_register failed: %d\n" @%s:%d
+  com.apple.private.sandbox.profile
+  com.apple.private.sandbox.profile:embedded
+  com.apple.sandbox.executable
+  Seatbelt sandbox policy
+  /private/var/db/Sandbox
+  "failed to initialize platform sandbox: %d" @%s:%d
+  driver extensions must be sandboxed
+  "%s: tracked deallocation caused sandbox size to underflow (%p)" @%s:%d
+  "%s: allocation header marked as sandbox tracked (%p)" @%s:%d
+  "%s: null sandbox pointer for tracked allocation (%p)" @%s:%d
+  "%s: allocation header marked as not sandbox tracked (%p)" @%s:%d
+  "platform sandbox invalid (%s)" @%s:%d
+  sandbox.profiles
+  System Policy
+  XProtect Policy
+  Sandbox
+  "Invalid profile type %d for policy description" @%s:%d
+  same-sandbox
+   policy:%s 
+  filecache_entry_set_syspolicy_locked
+  com.apple.sandbox.container
+  task_policy_set
+  task_policy_get
+  thread_policy
+  thread_policy_set
+  thread_policy_get
+  thread_set_policy
+  site.struct sandbox_state
+  sandbox_retain_persistent
+  sandbox.c
+  sandbox_release_persistent
+  syscall_sandbox_set_container
+  sandbox.sandboxes
+  "sandbox state %p points back to %p instead of %p" @%s:%d
+  "unexpected persistent refcount (%u) on sandbox %p" @%s:%d
+  "sandbox %p leaked %llu bytes" @%s:%d
+  Sandbox extension sentinel
+  com.apple.sandbox.pty
+  /private/var/db/Sandbox/syncroots.v2
+  "failed to resolve static policy identifier" @%s:%d
+  policy_id.c
+  com.apple.private.security.sandbox-reference
+  sandbox.protobox.index
+  com.apple.sandbox.application-group
+  com.apple.sandbox.system-container
+  com.apple.sandbox.system-group
+  [os_log] Sandbox apply: %s[%d] %s
+  [os_log] Sandbox failed to revoke host port (%d) for pid %d
+  [os_log] %s exhausted sandbox memory capacity; may be leaking extensions
+  [os_log] invalid sandbox profile for pid %d (%s)
+  [os_log] Sandbox: hook..execve() killing %s[pid=%d, uid=%d]: (err=%d) %s%s
+  [os_log] Sandbox: hook..execve() killing %s[pid=%d, uid=%d]: %s%s
+  [os_log] %s failed: %s[%d] not sandboxed
+  [os_log] Sandbox: container_inspect_for_proc(): no user state for pid: %d.
+  [os_log] Sandbox: container_inspect_for_proc(): no signing identifier for pid: %d.
+  [os_log] Sandbox -- persona_id type mismatch
+  [os_log] Sandbox -- syscall_container_map when removing a container: no ustate for UID %d
+  [os_log] Sandbox -- syscall_container_map when setting a container mapping: no ustate for UID %d
+  [os_log] Sandbox: no application group container found for group "%s"
+  [os_log] Sandbox: issue_extension_for_absolute_path(): could not get ustate for front uid: %d
+  [os_log] Sandbox: issue_extension_for_absolute_path(): could not get home directory for front uid: %d
+  [os_log] Sandbox: issue_extension_for_absolute_path(): memory allocation failure.
+  [os_log] Sandbox: %s is using absolute path exception entitlement: mapping path %s (%lu) to %s (%lu).
+  [os_log] Sandbox: no signing id when issuing an extension for system container
+  [os_log] Sandbox: no system container path found for ID "%s"
+  [os_log] Sandbox: no system group container path found for group "%s"
+  [os_log] Sandbox: no user state for UID %d; cannot process entitlement: %s
+
+── BYPASS METHODOLOGY ───────────────────────────────────────────────
+1. ENTITLEMENT INJECTION:
+   Добавить в lara.entitlements:
+   - com.apple.private.security.no-sandbox (если доступен в TrustCache)
+   - com.apple.security.exception.files.absolute-path.read-write
+   - com.apple.security.exception.files.absolute-path.read-only
+   - com.apple.private.security.storage-exempt.heritable
+   -> Подписать через ldid -S<entitlements.plist> в TrustCache pipeline
+
+2. UNENFORCED VIOLATION PATH:
+   - Попытаться получить доступ к путям через unenforced vector
+   - kernel sandbox логирует но НЕ блокирует (rdar://72823536)
+
+3. VFS MAC LABEL BYPASS:
+   - Использовать vfs_bypass_mac_label() из kernel exploit
+   - Снять MAC label с /var/jb до mkdir()
+   - Комбинировать с entitlement injection
+
+4. TRUSTCACHE HELPER PATH:
+   - create_var_jb_helper встроен в bundle → /var/tmp → posix_spawn
+   - Требует: TrustCache entry + entitlements через ldid
+   - Writable paths: /var/tmp, /private/var/mobile/tmp

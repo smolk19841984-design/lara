@@ -1,0 +1,38 @@
+; region fileoff=0x4c87f size=0x200 base_vm=N/A
+; hexdump:
+0004c87f  70 6d 61 70 5f 70 72 6f 74 65 63 74 5f 6f 70 74   pmap_protect_opt
+0004c88f  69 6f 6e 73 5f 69 6e 74 65 72 6e 61 6c 00 25 73   ions_internal.%s
+0004c89f  3a 20 69 6e 76 61 6c 69 64 20 61 64 64 72 65 73   : invalid addres
+0004c8af  73 20 72 61 6e 67 65 20 25 70 2c 20 25 70 20 40   s range %p, %p @
+0004c8bf  25 73 3a 25 64 00 25 73 3a 20 73 68 6f 75 6c 64   %s:%d.%s: should
+0004c8cf  20 68 61 76 65 20 62 65 65 6e 20 61 20 72 65 6d    have been a rem
+0004c8df  6f 76 65 20 6f 70 65 72 61 74 69 6f 6e 2c 20 70   ove operation, p
+0004c8ef  6d 61 70 3d 25 70 2c 20 73 74 61 72 74 3d 25 70   map=%p, start=%p
+0004c8ff  2c 20 65 6e 64 3d 25 70 2c 20 70 72 6f 74 3d 25   , end=%p, prot=%
+0004c90f  23 78 2c 20 6f 70 74 69 6f 6e 73 3d 25 23 78 2c   #x, options=%#x,
+0004c91f  20 61 72 67 73 3d 25 70 20 40 25 73 3a 25 64 00    args=%p @%s:%d.
+0004c92f  25 73 3a 20 6d 6f 64 69 66 79 69 6e 67 20 61 20   %s: modifying a 
+0004c93f  50 50 4c 20 6d 61 70 70 69 6e 67 20 70 74 65 5f   PPL mapping pte_
+0004c94f  70 3d 25 70 20 70 6d 61 70 3d 25 70 20 70 72 6f   p=%p pmap=%p pro
+0004c95f  74 3d 25 64 20 6f 70 74 69 6f 6e 73 3d 25 75 2c   t=%d options=%u,
+0004c96f  20 70 74 65 3d 30 78 25 6c 6c 78 2c 20 74 6d 70    pte=0x%llx, tmp
+0004c97f  6c 61 74 65 3d 30 78 25 6c 6c 78 20 40 25 73 3a   late=0x%llx @%s:
+0004c98f  25 64 00 25 73 3a 20 63 72 65 61 74 69 6e 67 20   %d.%s: creating 
+0004c99f  61 6e 20 78 50 52 52 20 6d 61 70 70 69 6e 67 20   an xPRR mapping 
+0004c9af  70 74 65 5f 70 3d 25 70 20 70 6d 61 70 3d 25 70   pte_p=%p pmap=%p
+0004c9bf  20 70 72 6f 74 3d 25 64 20 6f 70 74 69 6f 6e 73    prot=%d options
+0004c9cf  3d 25 75 2c 20 70 74 65 3d 30 78 25 6c 6c 78 2c   =%u, pte=0x%llx,
+0004c9df  20 74 6d 70 6c 61 74 65 3d 30 78 25 6c 6c 78 20    tmplate=0x%llx 
+0004c9ef  40 25 73 3a 25 64 00 70 6d 61 70 5f 70 72 6f 74   @%s:%d.pmap_prot
+0004c9ff  65 63 74 5f 6f 70 74 69 6f 6e 73 28 29 20 70 6d   ect_options() pm
+0004ca0f  61 70 20 25 70 20 73 74 61 72 74 20 30 78 25 6c   ap %p start 0x%l
+0004ca1f  6c 78 20 65 6e 64 20 30 78 25 6c 6c 78 20 40 25   lx end 0x%llx @%
+0004ca2f  73 3a 25 64 00 25 73 3a 20 66 61 69 6c 65 64 20   s:%d.%s: failed 
+0004ca3f  70 6d 61 70 5f 65 6e 74 65 72 5f 61 64 64 72 2c   pmap_enter_addr,
+0004ca4f  20 70 6d 61 70 3d 25 70 2c 20 76 61 3d 25 23 6c    pmap=%p, va=%#l
+0004ca5f  6c 78 2c 20 70 61 3d 25 6c 6c 75 2c 20 73 69 7a   lx, pa=%llu, siz
+0004ca6f  65 3d 25 75 2c 20 70 72 6f 74 3d 25 23 78 2c 20   e=%u, prot=%#x, 
+; disassembly:
+0x000000000004c87f: 706d6170   adr x16, #0x10f62e
+0x000000000004c883: 5f70726f   fcmla v31.8h, v2.8h, v18.h[1], #0x10e
+

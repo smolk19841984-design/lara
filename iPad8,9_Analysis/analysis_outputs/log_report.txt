@@ -1,0 +1,66 @@
+========================================================================
+  LARA LOG ANALYSIS REPORT
+========================================================================
+
+[SYSTEM]
+  Device         : iPad8,9
+  PID            : 814
+
+[KERNEL]
+  KernelCache base  : N/A
+  KernelCache slide : N/A
+  our_proc          : 0xffffffdf0753fd48
+  our_task          : 0xffffffdf07540478
+  proc→task diff    : our_task - our_proc = 0x730 ← MATCH (PROC_STRUCT_SIZE)
+
+[STRUCT OFFSETS]
+  PROC_STRUCT_SIZE  : 0x730
+  TASK_TNEXT_OFFSET : 0x58
+  THREAD_MUPCB_OFF  : 0xb0
+  PROC_PID_OFFSET   : 0x28
+
+[STAGE RESULTS]
+  Darksword (kR/W)  : ✓ SUCCESS
+  Sandbox escape    : ✓ SUCCESS
+  /var/jb mkdir     : ✗ FAIL  errno=13 (EACCES)
+
+[VFS MAC LABEL FAILURES] (4 events)
+  - 2026-04-10 22:38:37.095 lara[814:80138] [TWEAKS] WARNING: vfs_bypass_mac_label f
+  - 2026-04-10 22:38:50.644 lara[814:80140] [var/jb] Warning: vfs_bypass_mac_label r
+  - [2026-04-10 15:20:19 +0000] Warning: vfs_bypass_mac_label returned -1. May fail 
+  - [2026-04-10 17:38:50 +0000] Warning: vfs_bypass_mac_label returned -1. May fail 
+  Root cause: resolvepath() fails for newly-created files not in
+              VFS namecache. FIX: stat() warm-up + retry loop.
+
+[TRUSTCACHE] (1 events)
+  FAIL
+
+[REMOTE CALL] (1 run(s))
+
+  Run #1: target='SpringBoard...'
+    Result        : ✗ FAIL
+    TRO probe     : NOT CALLED (old build)
+    Invalid TROs  : 1023 total, unique=['0x2f00', '0x5b00', '0x0', '0x1f00']
+    Valid threads : 0
+    Injected      : 0
+    DIAGNOSIS: All TROs invalid → WRONG TASK ADDRESS (proc_task bug)
+               or WRONG rc_off_thread_t_tro offset.
+    FIX APPLIED: proc_task uses PROC_STRUCT_SIZE (taskbyproc approach).
+                 rc_probe_tro_offset() called before walk.
+
+========================================================================
+  DIAGNOSIS SUMMARY
+========================================================================
+
+  Issues found:
+  1. init_remote_call(SpringBoard...): infinite TRO-invalid loop (1023 bad TROs: ['0x2f00', '0x5b00', '0x0', '0x1f00']...)
+  2. /var/jb mkdir failed: errno=13 (EACCES) — sandbox still blocking
+  3. vfs_bypass_mac_label failed for 4 path(s) — ncache not warmed for newly-created files
+
+  Applied / recommended fixes:
+    - proc_task() → taskbyproc(proc+PROC_STRUCT_SIZE) [APPLIED]
+    - maxIter=1024 guard in thread walk [APPLIED]
+    - rc_probe_tro_offset() called before walk [APPLIED]
+    - Ensure sandbox escape completes before /var/jb creation
+    - stat() warm-up + retry loop in vfs_bypass_mac_label [APPLIED]
+
