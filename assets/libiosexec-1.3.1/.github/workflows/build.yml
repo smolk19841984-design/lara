@@ -1,0 +1,28 @@
+name: Build
+
+on:
+  push:
+    paths-ignore:
+      - 'LICENSE'  
+      - '**/*.md'  
+      - '**/*.txt'
+      - '.gitignore'  
+  pull_request:
+    paths-ignore:
+      - 'LICENSE'  
+      - '**/*.md'  
+      - '**/*.txt'  
+      - '.gitignore'  
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Compile libiosexec
+        run: |
+          make all
+      - name: Run tests
+        run: |
+          make check

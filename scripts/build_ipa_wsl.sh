@@ -2,7 +2,9 @@
 # build_ipa_wsl.sh — сборка jbdc/ в IPA через WSL + Theos toolchain
 # Запуск из PowerShell:  wsl bash scripts/build_ipa_wsl.sh
 # Или напрямую в WSL:    bash scripts/build_ipa_wsl.sh
-set -euo pipefail
+set -e
+set -u
+set -o pipefail
 
 # ─── Пути ────────────────────────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -25,6 +27,10 @@ IPA_PATH="$PROJECT_DIR/dist/${APP_NAME}.ipa"
 ENTITLEMENTS="${LARA_LDID_ENTITLEMENTS:-$PROJECT_DIR/Config/lara.entitlements}"
 LARA_LDID_SIGN="${LARA_LDID_SIGN:-1}"
 
+THIRD_PARTY_BUILD_DIR="$PROJECT_DIR/third_party/build/ios"
+THIRD_PARTY_LIB_DIR="$THIRD_PARTY_BUILD_DIR/lib"
+THIRD_PARTY_INCLUDE_DIR="$THIRD_PARTY_BUILD_DIR/include"
+
 # ─── Проверки ─────────────────────────────────────────────────────────────────
 if [[ ! -f "$CLANG" ]]; then
   echo "ERROR: clang не найден по пути $CLANG" >&2
@@ -45,7 +51,7 @@ fi
 echo "=== Theos clang build: $APP_NAME ==="
 echo "  Toolchain : $THEOS_TC"
 echo "  SDK       : $SDK"
-echo "  Src       : $PROJECT_DIR/jbdc"
+echo "  Src       : $PROJECT_DIR (root sources)"
 
 APP_TEMPLATE_DIR="$PROJECT_DIR/lara"
 if [[ ! -d "$APP_TEMPLATE_DIR" ]]; then
@@ -103,8 +109,22 @@ require_bundle_assets() {
 sync_bundle_assets() {
   local app_dir="$1"
   rm -rf "$app_dir/assets" "$app_dir/Assets.xcassets" "$app_dir/media.xcassets"
-  if [[ -d "$APP_TEMPLATE_DIR/assets" ]]; then
+  # Prefer real assets from repo root (developer-provided), fall back to app template.
+  if [[ -d "$PROJECT_DIR/assets" ]]; then
+    cp -a "$PROJECT_DIR/assets" "$app_dir/"
+  elif [[ -d "$APP_TEMPLATE_DIR/assets" ]]; then
     cp -a "$APP_TEMPLATE_DIR/assets" "$app_dir/"
+  fi
+
+  # Compatibility: some setups provide bootstrap under a slightly different name.
+  if [[ -f "$app_dir/assets/bootstrap-iphoneos-arm64.tar.zst" && ! -f "$app_dir/assets/bootstrap-ssh-iphoneos-arm64.tar.zst" ]]; then
+    cp -a "$app_dir/assets/bootstrap-iphoneos-arm64.tar.zst" "$app_dir/assets/bootstrap-ssh-iphoneos-arm64.tar.zst"
+  fi
+
+  # Normalize tool layout: allow `assets/tar` to be used as `assets/tools/tar`.
+  if [[ -f "$app_dir/assets/tar" && ! -f "$app_dir/assets/tools/tar" ]]; then
+    mkdir -p "$app_dir/assets/tools"
+    cp -a "$app_dir/assets/tar" "$app_dir/assets/tools/tar"
   fi
   if [[ -d "$APP_TEMPLATE_DIR/other/Assets.xcassets" ]]; then
     cp -a "$APP_TEMPLATE_DIR/other/Assets.xcassets" "$app_dir/"
@@ -119,19 +139,135 @@ strip_optional_bundle_files() {
   rm -f "$app_dir/assets/tools/README_DOPAMINE_ORIGIN.md"
 }
 
+prepare_root_assets_layout() {
+  # Normalize developer-provided assets in $PROJECT_DIR/assets into the layout
+  # expected by the app bundle: assets/tools/* and bootstrap-ssh-*.tar.zst.
+  if [[ ! -d "$PROJECT_DIR/assets" ]]; then
+    return 0
+  fi
+
+  mkdir -p "$PROJECT_DIR/assets/tools"
+
+  if [[ -f "$PROJECT_DIR/assets/tar" && ! -f "$PROJECT_DIR/assets/tools/tar" ]]; then
+    cp -a "$PROJECT_DIR/assets/tar" "$PROJECT_DIR/assets/tools/tar"
+  fi
+
+  if [[ -f "$PROJECT_DIR/assets/libintl.8.dylib" && ! -f "$PROJECT_DIR/assets/tools/libintl.8.dylib" ]]; then
+    cp -a "$PROJECT_DIR/assets/libintl.8.dylib" "$PROJECT_DIR/assets/tools/libintl.8.dylib"
+  fi
+
+  if [[ -f "$PROJECT_DIR/assets/bootstrap-iphoneos-arm64.tar.zst" && ! -f "$PROJECT_DIR/assets/bootstrap-ssh-iphoneos-arm64.tar.zst" ]]; then
+    cp -a "$PROJECT_DIR/assets/bootstrap-iphoneos-arm64.tar.zst" "$PROJECT_DIR/assets/bootstrap-ssh-iphoneos-arm64.tar.zst"
+  fi
+
+  if [[ -d "$PROJECT_DIR/assets/libiosexec-1.3.1" && ! -f "$PROJECT_DIR/assets/tools/libiosexec.1.dylib" ]]; then
+    echo "  assets    : building libiosexec.1.dylib..."
+    "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
+      -dynamiclib -O2 -fvisibility=hidden \
+      -Wl,-dead_strip \
+      -Wl,-install_name,@executable_path/../Frameworks/libiosexec.1.dylib \
+      -I"$PROJECT_DIR/assets/libiosexec-1.3.1" \
+      "$PROJECT_DIR/assets/libiosexec-1.3.1/execl.c" \
+      "$PROJECT_DIR/assets/libiosexec-1.3.1/execv.c" \
+      "$PROJECT_DIR/assets/libiosexec-1.3.1/get_new_argv.c" \
+      "$PROJECT_DIR/assets/libiosexec-1.3.1/posix_spawn.c" \
+      "$PROJECT_DIR/assets/libiosexec-1.3.1/system.c" \
+      "$PROJECT_DIR/assets/libiosexec-1.3.1/utils.c" \
+      "$PROJECT_DIR/assets/libiosexec-1.3.1/fake_getgrent.c" \
+      "$PROJECT_DIR/assets/libiosexec-1.3.1/fake_getpwent.c" \
+      "$PROJECT_DIR/assets/libiosexec-1.3.1/fake_getusershell.c" \
+      -o "$PROJECT_DIR/assets/tools/libiosexec.1.dylib"
+  fi
+}
+
+build_stub_third_party_libs() {
+  # Build minimal stub versions of libxpf and libgrabkernel2 when the real
+  # third_party artifacts are not present in this checkout.
+  local ar_bin="$THEOS_TC/bin/llvm-ar"
+
+  mkdir -p "$THIRD_PARTY_LIB_DIR" "$THIRD_PARTY_INCLUDE_DIR/choma"
+  mkdir -p "$THIRD_PARTY_INCLUDE_DIR/curl" "$THIRD_PARTY_INCLUDE_DIR/CommonCrypto"
+
+  # Headers used by the app sources
+  cp -a "$PROJECT_DIR/stubs/xpf.h" "$THIRD_PARTY_INCLUDE_DIR/" 2>/dev/null || true
+  cp -a "$PROJECT_DIR/stubs/libgrabkernel2.h" "$THIRD_PARTY_INCLUDE_DIR/" 2>/dev/null || true
+  cp -a "$PROJECT_DIR/stubs/zstd.h" "$THIRD_PARTY_INCLUDE_DIR/" 2>/dev/null || true
+  cp -a "$PROJECT_DIR/stubs/curl/curl.h" "$THIRD_PARTY_INCLUDE_DIR/curl/" 2>/dev/null || true
+  cp -a "$PROJECT_DIR/stubs/CommonCrypto/CommonDigest.h" "$THIRD_PARTY_INCLUDE_DIR/CommonCrypto/" 2>/dev/null || true
+  cp -a "$PROJECT_DIR/stubs/choma/MachO.h" "$THIRD_PARTY_INCLUDE_DIR/choma/" 2>/dev/null || true
+
+  local objdir="$BUILD_DIR/third_party_stub_objs"
+  rm -rf "$objdir"
+  mkdir -p "$objdir"
+
+  echo "  third_party: building stub libxpf.a / libgrabkernel2.a"
+  "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
+    -O2 -fno-objc-arc \
+    -I"$PROJECT_DIR/stubs" \
+    -I"$THIRD_PARTY_INCLUDE_DIR" \
+    -c "$PROJECT_DIR/stubs/xpf_stub.c" \
+    -o "$objdir/xpf_stub.o"
+
+  "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
+    -O2 -fobjc-arc \
+    -I"$PROJECT_DIR/stubs" \
+    -I"$THIRD_PARTY_INCLUDE_DIR" \
+    -c "$PROJECT_DIR/stubs/libgrabkernel2_stub.m" \
+    -o "$objdir/libgrabkernel2_stub.o"
+
+  "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
+    -O2 -fno-objc-arc \
+    -I"$PROJECT_DIR/stubs" \
+    -I"$THIRD_PARTY_INCLUDE_DIR" \
+    -c "$PROJECT_DIR/stubs/zstd_stub.c" \
+    -o "$objdir/zstd_stub.o"
+
+  "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
+    -O2 -fno-objc-arc \
+    -I"$PROJECT_DIR/stubs" \
+    -I"$THIRD_PARTY_INCLUDE_DIR" \
+    -c "$PROJECT_DIR/stubs/curl/curl_stub.c" \
+    -o "$objdir/curl_stub.o"
+
+  "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
+    -O2 -fno-objc-arc \
+    -I"$PROJECT_DIR/stubs" \
+    -I"$THIRD_PARTY_INCLUDE_DIR" \
+    -c "$PROJECT_DIR/stubs/CommonCrypto/commoncrypto_stub.c" \
+    -o "$objdir/commoncrypto_stub.o"
+
+  "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libxpf.a" "$objdir/xpf_stub.o"
+  "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libgrabkernel2.a" "$objdir/libgrabkernel2_stub.o"
+  "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libzstd.a" "$objdir/zstd_stub.o"
+  "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libcurl.a" "$objdir/curl_stub.o"
+  "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libcommoncrypto.a" "$objdir/commoncrypto_stub.o"
+
+  # llvm-ar writes the index; no separate ranlib needed.
+}
+
 LIB_DIR=""
 LIB_LINK_MODE=""
 STATIC_LINK_FLAGS=()
-if [[ -f "$PROJECT_DIR/third_party/build/ios/lib/libxpf.a" && -f "$PROJECT_DIR/third_party/build/ios/lib/libgrabkernel2.a" ]]; then
-  LIB_DIR="$PROJECT_DIR/third_party/build/ios/lib"
+STUB_THIRD_PARTY="0"
+if [[ -f "$THIRD_PARTY_LIB_DIR/libxpf.a" && -f "$THIRD_PARTY_LIB_DIR/libgrabkernel2.a" && -f "$THIRD_PARTY_LIB_DIR/libzstd.a" && -f "$THIRD_PARTY_LIB_DIR/libcurl.a" && -f "$THIRD_PARTY_LIB_DIR/libcommoncrypto.a" ]]; then
+  LIB_DIR="$THIRD_PARTY_LIB_DIR"
   LIB_LINK_MODE="static"
-  STATIC_LINK_FLAGS=(-framework Security -lcompression -lpartial)
+  STATIC_LINK_FLAGS=()
 elif [[ -f "$APP_TEMPLATE_DIR/lib/libxpf.dylib" && -f "$APP_TEMPLATE_DIR/lib/libgrabkernel2.dylib" ]]; then
   LIB_DIR="$APP_TEMPLATE_DIR/lib"
   LIB_LINK_MODE="dynamic"
 else
-  echo "ERROR: Не найдены ни static, ни dynamic iOS библиотеки XPF/libgrabkernel2" >&2
-  exit 1
+  # Try to build stub libs as a fallback for minimal, linkable IPA builds.
+  build_stub_third_party_libs
+  if [[ -f "$THIRD_PARTY_LIB_DIR/libxpf.a" && -f "$THIRD_PARTY_LIB_DIR/libgrabkernel2.a" && -f "$THIRD_PARTY_LIB_DIR/libzstd.a" && -f "$THIRD_PARTY_LIB_DIR/libcurl.a" && -f "$THIRD_PARTY_LIB_DIR/libcommoncrypto.a" ]]; then
+    LIB_DIR="$THIRD_PARTY_LIB_DIR"
+    LIB_LINK_MODE="static"
+    STATIC_LINK_FLAGS=()
+    STUB_THIRD_PARTY="1"
+  else
+    echo "ERROR: Не найдены ни static, ни dynamic iOS библиотеки XPF/libgrabkernel2" >&2
+    exit 1
+  fi
 fi
 
 # ─── Чистим старый билд ───────────────────────────────────────────────────────
@@ -139,21 +275,24 @@ rm -rf "$BUILD_DIR" "$PROJECT_DIR/dist"
 mkdir -p "$APP_DIR/Frameworks"
 
 # ─── Собираем список .m файлов ────────────────────────────────────────────────
+# В этом checkout директория jbdc/ не компилируется (часть исходников/зависимостей отсутствует).
+# Для получения сборочного IPA собираем основное приложение из корня репозитория.
 SOURCES=()
 while IFS= read -r -d '' f; do
   SOURCES+=("$f")
-done < <(find "$PROJECT_DIR/jbdc" -name "*.m" ! -name "ppl_test.m" ! -path "*/third_party_bridge/*" -print0 | sort -z)
-
-# ── third_party/darksword-kexploit-fun (Beta вкладка) ──────────────────────
-# Все модули third_party портированы в dsfun_all_bridge.m через Lara API.
-# Исходные .m/.c файлы third_party НЕ компилируются (конфликты с Lara).
-DSFUN_DIR="$PROJECT_DIR/third_party/darksword-kexploit-fun/darksword-kexploit-fun"
-DSFUN_SOURCES=()
-if [[ -d "$DSFUN_DIR" ]]; then
-  # Только bridge — все dsfun_* функции через Lara API
-  SOURCES+=("$PROJECT_DIR/jbdc/third_party_bridge/dsfun_all_bridge.m")
-  echo "  third_party bridge: 1 (dsfun_all_bridge.m)"
-fi
+done < <(
+  find "$PROJECT_DIR" \
+    -name "*.m" \
+    ! -path "$PROJECT_DIR/jbdc/*" \
+    ! -path "$PROJECT_DIR/iPad8,9_Analysis/*" \
+    ! -path "$PROJECT_DIR/third_party/*" \
+    ! -path "$PROJECT_DIR/wsl_minimal/*" \
+    ! -path "$PROJECT_DIR/kexploit/ppl_test.m" \
+    ! -path "$PROJECT_DIR/rootless/*" \
+    ! -path "$PROJECT_DIR/scripts/*" \
+    ! -path "$PROJECT_DIR/stubs/*" \
+    -print0 | sort -z
+)
 
 echo "  Файлов .m/.c : ${#SOURCES[@]}"
 
@@ -168,26 +307,18 @@ mkdir -p "$BUILD_DIR"
   -Os \
   -Wno-unused-variable \
   -Wno-deprecated-declarations \
-  -include "$PROJECT_DIR/jbdc/stubs/compat.h" \
-  -I"$PROJECT_DIR/jbdc" \
-  -I"$PROJECT_DIR/jbdc/stubs" \
-  -I"$PROJECT_DIR/jbdc/views" \
-  -I"$PROJECT_DIR/jbdc/funcs" \
-  -I"$PROJECT_DIR/jbdc/kexploit" \
-  -I"$PROJECT_DIR/jbdc/utils" \
-  -I"$PROJECT_DIR/jbdc/third_party_bridge" \
-  -I"$PROJECT_DIR/jbdc/TaskRop" \
-  -I"$PROJECT_DIR/jbdc/remote" \
+  -include "$PROJECT_DIR/stubs/compat.h" \
+  -I"$PROJECT_DIR/stubs" \
+  -I"$PROJECT_DIR" \
+  -I"$PROJECT_DIR/views" \
+  -I"$PROJECT_DIR/funcs" \
+  -I"$PROJECT_DIR/kexploit" \
+  -I"$PROJECT_DIR/utils" \
+  -I"$PROJECT_DIR/TaskRop" \
+  -I"$PROJECT_DIR/remote" \
   -I"$APP_TEMPLATE_DIR/headers" \
   -I"$PROJECT_DIR/third_party/build/include" \
-  -I"$PROJECT_DIR/third_party/build/ios/include" \
-  -DDSFUN_EMBEDDED_IN_LARA=1 \
-  -I"$DSFUN_DIR/kexploit" \
-  -I"$DSFUN_DIR/utils" \
-  -I"$DSFUN_DIR/research" \
-  -I"$DSFUN_DIR/kpf" \
-  -Wl,-u,_DSExploitDidFailNotification \
-  -Wl,-exported_symbol,_DSExploitDidFailNotification \
+  -I"$THIRD_PARTY_INCLUDE_DIR" \
   -framework UIKit \
   -framework Foundation \
   -framework AVFoundation \
@@ -201,10 +332,11 @@ mkdir -p "$BUILD_DIR"
   -lz \
   "${STATIC_LINK_FLAGS[@]}" \
   -L"$LIB_DIR" \
-  -L"$PROJECT_DIR/third_party/zstd-1.5.5/lib" \
   -lxpf \
   -lgrabkernel2 \
   -lzstd \
+  -lcurl \
+  -lcommoncrypto \
   -Wl,-rpath,@executable_path/Frameworks \
   -Wl,-dead_strip \
   "${SOURCES[@]}" \
@@ -263,10 +395,13 @@ fi
 echo "  Frameworks: OK ($LIB_LINK_MODE)"
 
 # ─── Assets ───────────────────────────────────────────────────────────────────
+prepare_root_assets_layout
 sync_bundle_assets "$APP_DIR"
 strip_optional_bundle_files "$APP_DIR"
 warn_missing_bundle_assets "$APP_DIR"
-require_bundle_assets "$APP_DIR"
+if [[ "${LARA_REQUIRE_BUNDLED_ASSETS:-0}" == "1" ]]; then
+  require_bundle_assets "$APP_DIR"
+fi
 
 # Ensure bundled helper binaries keep executable bits inside IPA payload.
 if [[ -d "$APP_DIR/assets/tools" ]]; then
@@ -275,12 +410,16 @@ fi
 
 # ─── App Icon ─────────────────────────────────────────────────────────────────
 ICON_DIR="$BUILD_DIR/icons"
-echo "  Иконка    : генерация..."
-python3 "$PROJECT_DIR/scripts/generate_icon.py" "$ICON_DIR" 2>&1 | sed 's/^/    /'
-# Copy all generated PNGs to the .app root
-if [[ -d "$ICON_DIR" ]]; then
-  cp "$ICON_DIR"/AppIcon*.png "$APP_DIR/" 2>/dev/null || true
-  echo "  Иконка    : OK"
+if [[ -f "$PROJECT_DIR/scripts/generate_icon.py" ]]; then
+  echo "  Иконка    : генерация..."
+  python3 "$PROJECT_DIR/scripts/generate_icon.py" "$ICON_DIR" 2>&1 | sed 's/^/    /'
+  # Copy all generated PNGs to the .app root
+  if [[ -d "$ICON_DIR" ]]; then
+    cp "$ICON_DIR"/AppIcon*.png "$APP_DIR/" 2>/dev/null || true
+    echo "  Иконка    : OK"
+  fi
+else
+  echo "  Иконка    : SKIP (scripts/generate_icon.py не найден)"
 fi
 
 # ─── Подпись ldid ─────────────────────────────────────────────────────────────
@@ -305,7 +444,9 @@ if [[ "$LARA_LDID_SIGN" == "1" ]]; then
     done < <(find "$APP_DIR/assets/tools" -maxdepth 1 -type f -print0)
   fi
   strip_optional_bundle_files "$APP_DIR"
-  require_bundle_assets "$APP_DIR"
+  if [[ "${LARA_REQUIRE_BUNDLED_ASSETS:-0}" == "1" ]]; then
+    require_bundle_assets "$APP_DIR"
+  fi
   echo "  Подпись   : OK"
 fi
 

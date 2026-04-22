@@ -35,11 +35,11 @@ BOOL bootstrap_is_downloaded(void) {
     
     if (exists) {
         NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:bootstrapPath error:nil];
-        NSNumber *size = [attrs fileSize];
-        bs_log("Найден существующий bootstrap.tar (%lu байт)", (unsigned long)[size longLongValue]);
+        unsigned long long size = [attrs fileSize];
+        bs_log("Найден существующий bootstrap.tar (%llu байт)", size);
         
         // Минимальный размер для валидного bootstrap.tar (~1MB)
-        if ([size longLongValue] < 1000000) {
+        if (size < 1000000ULL) {
             bs_log("Предупреждение: файл слишком маленький, возможна повторная загрузка");
         }
     }
@@ -49,7 +49,7 @@ BOOL bootstrap_is_downloaded(void) {
 
 // Асинхронная загрузка bootstrap с прогрессом
 void bootstrap_download_async(void (^completion)(BOOL success, NSError *error)) {
-    bs_log("Начало загрузки bootstrap.tar из: %s", BOOTSTRAP_URL);
+    bs_log("Начало загрузки bootstrap.tar из: %s", [BOOTSTRAP_URL UTF8String]);
     
     NSURL *url = [NSURL URLWithString:BOOTSTRAP_URL];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
@@ -102,8 +102,8 @@ void bootstrap_download_async(void (^completion)(BOOL success, NSError *error)) 
         
         // Проверяем размер загруженного файла
         NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:bootstrapPath error:nil];
-        NSNumber *size = [attrs fileSize];
-        bs_log("✓ Bootstrap успешно загружен: %lu байт", (unsigned long)[size longLongValue]);
+        unsigned long long size = [attrs fileSize];
+        bs_log("✓ Bootstrap успешно загружен: %llu байт", size);
         
         if (completion) completion(YES, nil);
     }];
@@ -122,7 +122,7 @@ BOOL bootstrap_download_sync(NSError **outError) {
     
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     
-    bootstrap_download_async:^(BOOL suc, NSError *err) {
+    bootstrap_download_async(^(BOOL suc, NSError *err) {
         success = suc;
         error = err;
         dispatch_semaphore_signal(sema);
@@ -157,8 +157,7 @@ BOOL bootstrap_extract_to(NSString *destinationPath) {
         }
     }
     
-    // Используем tar через NSTask для распаковки
-    // В реальной реализации потребуется правильный путь к tar
+    // Используем tar через posix_spawn (NSTask недоступен на iOS)
     NSString *tarPath = @"/usr/bin/tar";
     if (![[NSFileManager defaultManager] fileExistsAtPath:tarPath]) {
         tarPath = @"/bin/tar";
@@ -172,31 +171,39 @@ BOOL bootstrap_extract_to(NSString *destinationPath) {
         return NO; // Заглушка - нужна реализация распаковки
     }
     
-    NSTask *task = [[NSTask alloc] init];
-    task.launchPath = tarPath;
-    task.arguments = @[@"-xzf", bootstrapPath, @"-C", destinationPath];
-    
-    NSPipe *pipe = [NSPipe pipe];
-    task.standardOutput = pipe;
-    task.standardError = pipe;
-    
-    @try {
-        [task launch];
-        [task waitUntilExit];
-        
-        if (task.terminationStatus == 0) {
-            bs_log("✓ Bootstrap успешно распакован");
-            return YES;
-        } else {
-            NSData *outputData = [[pipe fileHandleForReading] readDataToEndOfFile];
-            NSString *output = [[NSString alloc] initWithData:outputData encoding:NSUTF8StringEncoding];
-            bs_log("Ошибка распаковки (код %d): %s", task.terminationStatus, [output UTF8String]);
-            return NO;
-        }
-    } @catch (NSException *e) {
-        bs_log("Исключение при распаковке: %s", [[e reason] UTF8String]);
+    #include <spawn.h>
+    #include <sys/wait.h>
+    extern char **environ;
+
+    pid_t pid = 0;
+    const char *argv[] = {
+        [tarPath UTF8String],
+        "-xf",
+        [bootstrapPath UTF8String],
+        "-C",
+        [destinationPath UTF8String],
+        NULL,
+    };
+
+    int rc = posix_spawn(&pid, argv[0], NULL, NULL, (char *const *)argv, environ);
+    if (rc != 0) {
+        bs_log("Ошибка запуска tar (posix_spawn rc=%d)", rc);
         return NO;
     }
+
+    int status = 0;
+    if (waitpid(pid, &status, 0) < 0) {
+        bs_log("Ошибка waitpid для tar");
+        return NO;
+    }
+
+    if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+        bs_log("✓ Bootstrap успешно распакован");
+        return YES;
+    }
+
+    bs_log("Ошибка распаковки (status=%d)", status);
+    return NO;
 }
 
 // Главная функция инициализации bootstrap
