@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Основные entitlements для приложения -->
+    <key>application-identifier</key>
+    <string>$(AppIdentifierPrefix)com.lara.jailbreak</string>
+    
+    <key>com.apple.developer.team-identifier</key>
+    <string>$(TeamIdentifierPrefix)</string>
+    
+    <key>get-task-allow</key>
+    <true/>
+    
+    <key>dynamic-codesigning</key>
+    <true/>
+    
+    <!-- Права доступа к сети для загрузки bootstrap -->
+    <key>com.apple.private.network.socket.createboundtoken</key>
+    <true/>
+    
+    <key>com.apple.private.network.extension-firewall</key>
+    <true/>
+    
+    <!-- Права для работы с сокетами (необходимо для эксплойта) -->
+    <key>com.apple.private.incoming-call-filter</key>
+    <true/>
+    
+    <key>com.apple.private.can-get-all-network-interfaces</key>
+    <true/>
+    
+    <!-- Права для работы с памятью и mmap -->
+    <key>com.apple.private.memorystatus</key>
+    <true/>
+    
+    <key>com.apple.private.vm_allocation</key>
+    <true/>
+    
+    <!-- Права для обхода песочницы -->
+    <key>com.apple.private.security.no-sandbox</key>
+    <true/>
+    
+    <key>com.apple.private.security.container-manager</key>
+    <true/>
+    
+    <key>com.apple.private.security.storage-exempt</key>
+    <true/>
+    
+    <key>com.apple.private.security.storage-exempt.heritable</key>
+    <true/>
+    
+    <!-- Права для работы с файловой системой -->
+    <key>com.apple.private.vfs.allow-hard-link-count</key>
+    <true/>
+    
+    <key>com.apple.private.vfs.synthetic-apfs-volume-create</key>
+    <true/>
+    
+    <key>com.apple.private.vfs.open-by-id</key>
+    <true/>
+    
+    <key>com.apple.private.vfs.quarantine-bypass</key>
+    <true/>
+    
+    <!-- Права для работы с процессами -->
+    <key>com.apple.private.process-policy</key>
+    <true/>
+    
+    <key>com.apple.private.process-policy.set-host-special-port</key>
+    <true/>
+    
+    <key>com.apple.private.task-for-pid</key>
+    <true/>
+    
+    <key>com.apple.private.pid-hiding</key>
+    <true/>
+    
+    <!-- Права для IOKit доступа (необходимо для IOSurface эксплойта) -->
+    <key>com.apple.private.iokit-user-client-class</key>
+    <array>
+        <string>IOSurfaceRootUserClient</string>
+        <string>IOGraphicsSharedUserClient</string>
+    </array>
+    
+    <key>com.apple.private.iokit.port-access</key>
+    <true/>
+    
+    <key>com.apple.private.iokit.device-usage-reporting</key>
+    <true/>
+    
+    <!-- Права для работы с Mach портами -->
+    <key>com.apple.private.mach.host-port</key>
+    <true/>
+    
+    <key>com.apple.private.mach.exception-ports</key>
+    <true/>
+    
+    <key>com.apple.private.mach.special-ports</key>
+    <true/>
+    
+    <!-- Права для работы с ключами ядра -->
+    <key>com.apple.private.kernel.read-kmem</key>
+    <true/>
+    
+    <key>com.apple.private.kernel.write-kmem</key>
+    <true/>
+    
+    <key>com.apple.private.kernel.cs-flags</key>
+    <true/>
+    
+    <!-- Права для TrustCache -->
+    <key>com.apple.private.amfi.trust-cache-manipulation</key>
+    <true/>
+    
+    <key>com.apple.private.cs.debugger</key>
+    <true/>
+    
+    <!-- Права для rootless режима -->
+    <key>com.apple.private.rootless.storage</key>
+    <true/>
+    
+    <key>com.apple.private.rootless.storage.heritable</key>
+    <true/>
+    
+    <!-- Дополнительные привилегии -->
+    <key>com.apple.private.persona-mgmt</key>
+    <true/>
+    
+    <key>com.apple.private.security.system-application</key>
+    <true/>
+    
+    <key>com.apple.private.tcc.manager</key>
+    <true/>
+    
+    <key>com.apple.private.xpc.domain-extension</key>
+    <true/>
+    
+    <!-- Для установки Sileo/Zebra -->
+    <key>com.apple.private.installer</key>
+    <true/>
+    
+    <key>com.apple.private.mobileinstall.allowedSPI</key>
+    <array>
+        <string>InstallForLaunchServices</string>
+        <string>UninstallForLaunchServices</string>
+        <string>Lookup</string>
+    </array>
+</dict>
+</plist>
