@@ -120,11 +120,19 @@ sync_bundle_assets() {
   if [[ -f "$app_dir/assets/bootstrap-iphoneos-arm64.tar.zst" && ! -f "$app_dir/assets/bootstrap-ssh-iphoneos-arm64.tar.zst" ]]; then
     cp -a "$app_dir/assets/bootstrap-iphoneos-arm64.tar.zst" "$app_dir/assets/bootstrap-ssh-iphoneos-arm64.tar.zst"
   fi
+  # Prefer a single canonical bootstrap filename in the bundle.
+  if [[ -f "$app_dir/assets/bootstrap-ssh-iphoneos-arm64.tar.zst" && -f "$app_dir/assets/bootstrap-iphoneos-arm64.tar.zst" ]]; then
+    rm -f "$app_dir/assets/bootstrap-iphoneos-arm64.tar.zst"
+  fi
 
   # Normalize tool layout: allow `assets/tar` to be used as `assets/tools/tar`.
   if [[ -f "$app_dir/assets/tar" && ! -f "$app_dir/assets/tools/tar" ]]; then
     mkdir -p "$app_dir/assets/tools"
     cp -a "$app_dir/assets/tar" "$app_dir/assets/tools/tar"
+  fi
+  # Normalize legacy: prefer tools/tar and remove root-level tar copy.
+  if [[ -f "$app_dir/assets/tools/tar" && -f "$app_dir/assets/tar" ]]; then
+    rm -f "$app_dir/assets/tar"
   fi
   if [[ -d "$APP_TEMPLATE_DIR/other/Assets.xcassets" ]]; then
     cp -a "$APP_TEMPLATE_DIR/other/Assets.xcassets" "$app_dir/"
@@ -137,6 +145,8 @@ sync_bundle_assets() {
 strip_optional_bundle_files() {
   local app_dir="$1"
   rm -f "$app_dir/assets/tools/README_DOPAMINE_ORIGIN.md"
+  # Build inputs that should not ship inside the IPA.
+  rm -rf "$app_dir/assets/libiosexec-1.3.1" 2>/dev/null || true
 }
 
 build_real_choma_xpf_libs() {
@@ -258,7 +268,10 @@ build_stub_third_party_libs() {
   cp -a "$PROJECT_DIR/stubs/xpf.h" "$THIRD_PARTY_INCLUDE_DIR/" 2>/dev/null || true
   cp -a "$PROJECT_DIR/stubs/libgrabkernel2.h" "$THIRD_PARTY_INCLUDE_DIR/" 2>/dev/null || true
   cp -a "$PROJECT_DIR/stubs/zstd.h" "$THIRD_PARTY_INCLUDE_DIR/" 2>/dev/null || true
-  cp -a "$PROJECT_DIR/stubs/curl/curl.h" "$THIRD_PARTY_INCLUDE_DIR/curl/" 2>/dev/null || true
+  # Only copy stub headers when real ones aren't already installed.
+  if [[ ! -f "$THIRD_PARTY_INCLUDE_DIR/curl/curl.h" ]]; then
+    cp -a "$PROJECT_DIR/stubs/curl/curl.h" "$THIRD_PARTY_INCLUDE_DIR/curl/" 2>/dev/null || true
+  fi
   cp -a "$PROJECT_DIR/stubs/CommonCrypto/CommonDigest.h" "$THIRD_PARTY_INCLUDE_DIR/CommonCrypto/" 2>/dev/null || true
   cp -a "$PROJECT_DIR/stubs/choma/MachO.h" "$THIRD_PARTY_INCLUDE_DIR/choma/" 2>/dev/null || true
 
@@ -313,6 +326,7 @@ build_stub_third_party_libs() {
       -O2 -fno-objc-arc \
       -I"$PROJECT_DIR/stubs" \
       -I"$THIRD_PARTY_INCLUDE_DIR" \
+      -I"$THIRD_PARTY_BUILD_DIR/openssl/include" \
       -c "$PROJECT_DIR/stubs/CommonCrypto/commoncrypto_stub.c" \
       -o "$objdir/commoncrypto_stub.o"
     "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libcommoncrypto.a" "$objdir/commoncrypto_stub.o"
@@ -413,6 +427,9 @@ mkdir -p "$BUILD_DIR"
   -lzstd \
   -lcurl \
   -lcommoncrypto \
+  -L"$THIRD_PARTY_BUILD_DIR/openssl/lib" \
+  -lssl \
+  -lcrypto \
   -Wl,-rpath,@executable_path/Frameworks \
   -Wl,-dead_strip \
   "${SOURCES[@]}" \

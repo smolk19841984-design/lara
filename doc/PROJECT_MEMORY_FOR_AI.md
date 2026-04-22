@@ -38,6 +38,13 @@
 
 - `LARA_REQUIRE_BUNDLED_ASSETS=1`
 
+Состояние на **2026‑04‑22**:
+
+- IPA собирается: `dist/lara.ipa` (≈38 MB)
+- `XPF/ChOma` собираются “реальными” (static) в `third_party/build/ios/lib/`
+- `libcurl` теперь **реальный** (static) и больше не является `curl_stub.o`
+- Для `libcurl` используется **статический OpenSSL**, собранный под iOS arm64 и установленный в `third_party/build/ios/openssl/`
+
 и внутри IPA присутствуют:
 
 - `Payload/lara.app/assets/bootstrap-iphoneos-arm64.tar.zst`
@@ -55,7 +62,9 @@
 
 - `THEOS_TC=/opt/theos/toolchain/linux/iphone`
 - `SDK=/opt/theos/sdks/iPhoneOS16.5.sdk`
-- target: `arm64-apple-ios15.0`
+- target: `arm64-apple-ios15.0` (переменная `MIN_IOS="15.0"`)
+
+Важно: третьи библиотеки могут быть собраны с меньшим `-target` (например iOS 14.0) — это допустимо, если бинарники совместимы по минимальной версии.
 
 ### XPF требует libcompression
 
@@ -101,6 +110,10 @@
   - `xpc_dictionary_set_uint64`
   - `xpc_release`
 - `stubs/CommonCrypto/CommonDigest.h` расширен SHA1/SHA256/SHA384.
+- **Реальный `libcurl` (вариант B)**:
+  - `third_party/src/openssl` + `third_party/src/curl` добавлены как build inputs
+  - OpenSSL собран статически под iOS arm64 и установлен в `third_party/build/ios/openssl`
+  - `curl` собран статически под iOS arm64 с `--with-openssl=...` и установлен в `third_party/build/ios/lib/libcurl.a`
 
 ## 7) Как собирать IPA (коротко)
 
@@ -116,4 +129,20 @@
 - **подвисшие проверки в WSL**:
   - при вызове из PowerShell избегать `$VAR` внутри `bash -lc "..."` (PowerShell съедает `$...`).
   - использовать одинарные кавычки или фиксированные пути.
+
+## 9) Что ещё “не хватает” для iOS 17.3.1 (важно)
+
+Это список именно runtime‑рисков/дырок под **iOS 17.3.1**, даже если IPA “собирается”:
+
+- **Offsets / PatchFinder**:
+  - Проект содержит места, где логика завязана на iOS 17.3.1 (паттерны/оффсеты/гейты).
+  - Нужно подтвердить, что для целевого устройства (например iPad8,9 / build 21D61) реальные адреса/патчи совпадают и не остались “примерными”.
+- **Оставшиеся stubs (runtime не будет работать полноценно)**:
+  - `libzstd` пока stub → распаковка `.tar.zst` bootstrap на устройстве может не работать.
+  - `CommonCrypto` раньше был stub → теперь реализован через OpenSSL `libcrypto` (SHA1/SHA256/SHA384).
+  - `libgrabkernel2` раньше был stub → теперь `grab_kernelcache()` реализован через `libcurl` (URL задаётся через `LARA_KERNELCACHE_URL`).
+- **SDK 16.5 vs iOS 17.3.1**:
+  - Сборка идёт на `/opt/theos/sdks/iPhoneOS16.5.sdk`. Это нормально для компиляции, но не гарантирует правильность runtime‑поведения на 17.3.1 (особенно для приватных API/энтропии оффсетов).
+- **Assets в IPA**:
+  - Теперь `assets/libiosexec-1.3.1/` не пакуется в IPA (build‑input), но нужно следить, чтобы `assets/tools/libiosexec.1.dylib` и `assets/tools/tar` действительно выполнялись на устройстве.
 

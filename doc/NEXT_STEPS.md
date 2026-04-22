@@ -26,9 +26,17 @@
 
 - `stubs/CommonCrypto/*` (SHA1/SHA384/…)
 - `stubs/xpc/xpc.h` (декларации XPC)
-- `stubs/curl/*`, `stubs/zstd*` и т.п.
+- `stubs/zstd*`, `stubs/libgrabkernel2*` и т.п.
 
 Если нужен реальный функционал (а не только линковка), нужно заменить stubs на реальные зависимости/SDK headers/линковку.
+
+**Обновление (2026‑04‑22):**
+
+- `libcurl` уже подключён как **реальный** (вариант B) и лежит в `third_party/build/ios/lib/libcurl.a` (с OpenSSL в `third_party/build/ios/openssl/`).
+- Следующие “критичные” кандидаты на замену stub → real для iOS 17.3.1:
+  - (уже сделано) `libzstd` → real (внутрипроцессная распаковка `.zst` через `ZSTD_*` теперь работает)
+  - (уже сделано) `CommonCrypto` → real SHA через OpenSSL `libcrypto`
+  - (уже сделано) `libgrabkernel2`: `grab_kernelcache()` качает через `libcurl` при заданном `LARA_KERNELCACHE_URL`
 
 ## 4) Assets cleanup
 
@@ -38,6 +46,8 @@
 
 - сделать отдельный `assets_runtime/` (только то, что реально нужно на устройстве)
 - а `assets/` оставить как “build inputs”
+
+**Состояние (2026‑04‑22):** `assets/libiosexec-1.3.1/` больше не пакуется в IPA (убирается при упаковке), остаётся только `assets/tools/libiosexec.1.dylib`.
 
 ## 5) Проверка runtime
 

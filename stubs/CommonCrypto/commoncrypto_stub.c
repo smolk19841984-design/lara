@@ -1,26 +1,21 @@
 #include "CommonDigest.h"
 
-static unsigned char *fill_zero(unsigned char *md, int len) {
-    if (!md) return md;
-    for (int i = 0; i < len; i++) md[i] = 0;
-    return md;
-}
+// Implement CommonCrypto SHA API using OpenSSL libcrypto.
+// This keeps the rest of the codebase unchanged while providing real hashes.
+#include <openssl/sha.h>
 
 unsigned char *CC_SHA1(const void *data, CC_LONG len, unsigned char *md) {
-    (void)data;
-    (void)len;
-    return fill_zero(md, CC_SHA1_DIGEST_LENGTH);
+    if (!md) return NULL;
+    return SHA1((const unsigned char *)data, (size_t)len, md);
 }
 
 unsigned char *CC_SHA256(const void *data, CC_LONG len, unsigned char *md) {
-    (void)data;
-    (void)len;
-    return fill_zero(md, CC_SHA256_DIGEST_LENGTH);
+    if (!md) return NULL;
+    return SHA256((const unsigned char *)data, (size_t)len, md);
 }
 
 unsigned char *CC_SHA384(const void *data, CC_LONG len, unsigned char *md) {
-    (void)data;
-    (void)len;
-    return fill_zero(md, CC_SHA384_DIGEST_LENGTH);
+    if (!md) return NULL;
+    return SHA384((const unsigned char *)data, (size_t)len, md);
 }
 
