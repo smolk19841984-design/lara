@@ -12,7 +12,12 @@ URL=https://ftp.gnu.org/gnu/gettext/${TARBALL}
 THEOS_TC=${THEOS_TC:-/opt/theos/toolchain/linux/iphone}
 CLANG=${THEOS_TC}/bin/clang
 SDK_DIR=${SDK_DIR:-/opt/theos/sdks}
-SDK=$(ls -1 ${SDK_DIR}/iPhoneOS*.sdk 2>/dev/null | tail -1 || true)
+# Find latest iPhoneOS SDK directory reliably
+SDK=$(find "$SDK_DIR" -maxdepth 1 -type d -name "iPhoneOS*.sdk" 2>/dev/null | sort | tail -n1 || true)
+if [ -z "$SDK" ]; then
+  echo "ERROR: No iPhoneOS SDK found under $SDK_DIR"
+  exit 1
+fi
 MIN_IOS=${MIN_IOS:-15.0}
 
 if [ ! -x "$CLANG" ]; then
@@ -34,23 +39,32 @@ curl -L -o "$TARBALL" "$URL"
 tar -xf "$TARBALL"
 cd "$NAME"
 
-export CC="$CLANG"
-export CFLAGS="-target arm64-apple-ios${MIN_IOS} -isysroot ${SDK} -fPIC -O2"
-export LDFLAGS="-target arm64-apple-ios${MIN_IOS} -isysroot ${SDK} -Wl,-dead_strip"
+echo "DEBUG: THEOS_TC=$THEOS_TC"
+echo "DEBUG: SDK_DIR=$SDK_DIR"
+echo "DEBUG: DETECTED_SDK=$SDK"
+
+export CC="${CLANG} -isysroot ${SDK} -target arm64-apple-ios${MIN_IOS}"
+export CFLAGS="-fPIC -O2"
+export CPPFLAGS="-isysroot ${SDK} -I${SDK}/usr/include"
+export LDFLAGS="-isysroot ${SDK} -Wl,-dead_strip -L${SDK}/usr/lib"
 export PKG_CONFIG=""
 
 PREFIX="$BUILD_DIR/install"
 mkdir -p "$PREFIX"
 
 echo "Configuring for host=arm-apple-darwin..."
-./configure --host=arm-apple-darwin --enable-shared --disable-static --prefix="$PREFIX" \
-    CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CC="$CC" || true
+./configure --host=arm-apple-darwin --with-sysroot="$SDK" --enable-shared --disable-static --prefix="$PREFIX" \
+  CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" CC="$CC" || true
 
 # Some gettext releases use libtool/autoconf that fail with cross tools; try a fallback configure
 if [ $? -ne 0 ]; then
-  echo "Configure failed, attempting with --enable-static --disable-shared to build objects"
-  ./configure --host=arm-apple-darwin --enable-static --disable-shared --prefix="$PREFIX" \
-      CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" CC="$CC"
+  echo "Configure failed; saving config.log for inspection"
+  if [ -f config.log ]; then
+    cp config.log "$WD/config-gettext-config.log" || true
+  fi
+  echo "Attempting fallback configure with static build to gather objects"
+  ./configure --host=arm-apple-darwin --with-sysroot="$SDK" --enable-static --disable-shared --prefix="$PREFIX" \
+      CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" CC="$CC" || true
 fi
 
 echo "Running make..."
@@ -84,7 +98,11 @@ if [ -z "$OUTLIB" ]; then
   OUTLIB="$PREFIX/lib/libintl.8.dylib"
   mkdir -p "$(dirname $OUTLIB)"
   echo "Linking dynamic library to $OUTLIB"
-  "$CLANG" -dynamiclib -o "$OUTLIB" $OBJS -isysroot "$SDK" -target arm64-apple-ios${MIN_IOS} -install_name @rpath/libintl.8.dylib || true
+  LINKER="${THEOS_TC}/bin/clang -isysroot ${SDK} -target arm64-apple-ios${MIN_IOS}"
+  # Link with CoreFoundation framework and libiconv which gettext depends on
+  $LINKER -dynamiclib -o "$OUTLIB" $OBJS \
+    -isysroot "$SDK" -L"${SDK}/usr/lib" -liconv -framework CoreFoundation \
+    -Wl,-dead_strip -install_name @rpath/libintl.8.dylib || true
 fi
 
 if [ -f "$OUTLIB" ]; then

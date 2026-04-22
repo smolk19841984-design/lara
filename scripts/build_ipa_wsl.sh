@@ -139,6 +139,67 @@ strip_optional_bundle_files() {
   rm -f "$app_dir/assets/tools/README_DOPAMINE_ORIGIN.md"
 }
 
+build_real_choma_xpf_libs() {
+  # Build real libchoma + libxpf from in-tree sources when available.
+  if [[ ! -d "$PROJECT_DIR/ChOma" || ! -d "$PROJECT_DIR/XPF" ]]; then
+    return 0
+  fi
+
+  echo "  third_party: building real ChOma/XPF"
+
+  mkdir -p "$THIRD_PARTY_LIB_DIR" "$THIRD_PARTY_INCLUDE_DIR/choma"
+
+  local objdir="$BUILD_DIR/third_party_real_objs"
+  rm -rf "$objdir"
+  mkdir -p "$objdir/choma" "$objdir/xpf"
+
+  # ── Headers ────────────────────────────────────────────────────────────────
+  # ChOma headers are in ChOma/src/*.h (and include/choma in some layouts).
+  cp -a "$PROJECT_DIR/ChOma/src/"*.h "$THIRD_PARTY_INCLUDE_DIR/choma/" 2>/dev/null || true
+  if [[ -d "$PROJECT_DIR/ChOma/include/choma" ]]; then
+    cp -a "$PROJECT_DIR/ChOma/include/choma/"* "$THIRD_PARTY_INCLUDE_DIR/choma/" 2>/dev/null || true
+  fi
+  cp -a "$PROJECT_DIR/XPF/src/xpf.h" "$THIRD_PARTY_INCLUDE_DIR/" 2>/dev/null || true
+
+  # ── Build libchoma.a ───────────────────────────────────────────────────────
+  local choma_sources=()
+  while IFS= read -r -d '' f; do choma_sources+=("$f"); done < <(find "$PROJECT_DIR/ChOma/src" -maxdepth 1 -name "*.c" -print0 | sort -z)
+  local choma_objs=()
+  for f in "${choma_sources[@]}"; do
+    local base
+    base="$(basename "$f" .c)"
+    local o="$objdir/choma/$base.o"
+    choma_objs+=("$o")
+    "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
+      -O2 -fPIC -fvisibility=hidden \
+      -I"$THIRD_PARTY_INCLUDE_DIR" \
+      -I"$PROJECT_DIR/ChOma/src" \
+      -c "$f" -o "$o"
+  done
+  "$THEOS_TC/bin/llvm-ar" rcs "$THIRD_PARTY_LIB_DIR/libchoma.a" "${choma_objs[@]}"
+
+  # ── Build libxpf.a ─────────────────────────────────────────────────────────
+  local xpf_sources=()
+  while IFS= read -r -d '' f; do xpf_sources+=("$f"); done < <(
+    find "$PROJECT_DIR/XPF/src" -maxdepth 1 -name "*.c" ! -name "main.c" -print0 | sort -z
+  )
+  local xpf_objs=()
+  for f in "${xpf_sources[@]}"; do
+    local base
+    base="$(basename "$f" .c)"
+    local o="$objdir/xpf/$base.o"
+    xpf_objs+=("$o")
+    "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
+      -O2 -fPIC -fvisibility=hidden -fblocks \
+      -I"$THIRD_PARTY_INCLUDE_DIR" \
+      -I"$PROJECT_DIR/XPF/src" \
+      -I"$PROJECT_DIR/XPF/external/ChOma/include" \
+      -I"$PROJECT_DIR/stubs" \
+      -c "$f" -o "$o"
+  done
+  "$THEOS_TC/bin/llvm-ar" rcs "$THIRD_PARTY_LIB_DIR/libxpf.a" "${xpf_objs[@]}"
+}
+
 prepare_root_assets_layout() {
   # Normalize developer-provided assets in $PROJECT_DIR/assets into the layout
   # expected by the app bundle: assets/tools/* and bootstrap-ssh-*.tar.zst.
@@ -154,6 +215,11 @@ prepare_root_assets_layout() {
 
   if [[ -f "$PROJECT_DIR/assets/libintl.8.dylib" && ! -f "$PROJECT_DIR/assets/tools/libintl.8.dylib" ]]; then
     cp -a "$PROJECT_DIR/assets/libintl.8.dylib" "$PROJECT_DIR/assets/tools/libintl.8.dylib"
+  fi
+
+  # Also accept a prebuilt libintl placed in the repo root.
+  if [[ -f "$PROJECT_DIR/libintl.8.dylib" ]]; then
+    cp -a "$PROJECT_DIR/libintl.8.dylib" "$PROJECT_DIR/assets/tools/libintl.8.dylib"
   fi
 
   if [[ -f "$PROJECT_DIR/assets/bootstrap-iphoneos-arm64.tar.zst" && ! -f "$PROJECT_DIR/assets/bootstrap-ssh-iphoneos-arm64.tar.zst" ]]; then
@@ -200,47 +266,57 @@ build_stub_third_party_libs() {
   rm -rf "$objdir"
   mkdir -p "$objdir"
 
-  echo "  third_party: building stub libxpf.a / libgrabkernel2.a"
-  "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
-    -O2 -fno-objc-arc \
-    -I"$PROJECT_DIR/stubs" \
-    -I"$THIRD_PARTY_INCLUDE_DIR" \
-    -c "$PROJECT_DIR/stubs/xpf_stub.c" \
-    -o "$objdir/xpf_stub.o"
+  echo "  third_party: building stub libs (missing only)"
 
-  "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
-    -O2 -fobjc-arc \
-    -I"$PROJECT_DIR/stubs" \
-    -I"$THIRD_PARTY_INCLUDE_DIR" \
-    -c "$PROJECT_DIR/stubs/libgrabkernel2_stub.m" \
-    -o "$objdir/libgrabkernel2_stub.o"
+  if [[ ! -f "$THIRD_PARTY_LIB_DIR/libxpf.a" ]]; then
+    "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
+      -O2 -fno-objc-arc \
+      -I"$PROJECT_DIR/stubs" \
+      -I"$THIRD_PARTY_INCLUDE_DIR" \
+      -c "$PROJECT_DIR/stubs/xpf_stub.c" \
+      -o "$objdir/xpf_stub.o"
+    "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libxpf.a" "$objdir/xpf_stub.o"
+  fi
 
-  "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
-    -O2 -fno-objc-arc \
-    -I"$PROJECT_DIR/stubs" \
-    -I"$THIRD_PARTY_INCLUDE_DIR" \
-    -c "$PROJECT_DIR/stubs/zstd_stub.c" \
-    -o "$objdir/zstd_stub.o"
+  if [[ ! -f "$THIRD_PARTY_LIB_DIR/libgrabkernel2.a" ]]; then
+    "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
+      -O2 -fobjc-arc \
+      -I"$PROJECT_DIR/stubs" \
+      -I"$THIRD_PARTY_INCLUDE_DIR" \
+      -c "$PROJECT_DIR/stubs/libgrabkernel2_stub.m" \
+      -o "$objdir/libgrabkernel2_stub.o"
+    "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libgrabkernel2.a" "$objdir/libgrabkernel2_stub.o"
+  fi
 
-  "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
-    -O2 -fno-objc-arc \
-    -I"$PROJECT_DIR/stubs" \
-    -I"$THIRD_PARTY_INCLUDE_DIR" \
-    -c "$PROJECT_DIR/stubs/curl/curl_stub.c" \
-    -o "$objdir/curl_stub.o"
+  if [[ ! -f "$THIRD_PARTY_LIB_DIR/libzstd.a" ]]; then
+    "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
+      -O2 -fno-objc-arc \
+      -I"$PROJECT_DIR/stubs" \
+      -I"$THIRD_PARTY_INCLUDE_DIR" \
+      -c "$PROJECT_DIR/stubs/zstd_stub.c" \
+      -o "$objdir/zstd_stub.o"
+    "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libzstd.a" "$objdir/zstd_stub.o"
+  fi
 
-  "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
-    -O2 -fno-objc-arc \
-    -I"$PROJECT_DIR/stubs" \
-    -I"$THIRD_PARTY_INCLUDE_DIR" \
-    -c "$PROJECT_DIR/stubs/CommonCrypto/commoncrypto_stub.c" \
-    -o "$objdir/commoncrypto_stub.o"
+  if [[ ! -f "$THIRD_PARTY_LIB_DIR/libcurl.a" ]]; then
+    "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
+      -O2 -fno-objc-arc \
+      -I"$PROJECT_DIR/stubs" \
+      -I"$THIRD_PARTY_INCLUDE_DIR" \
+      -c "$PROJECT_DIR/stubs/curl/curl_stub.c" \
+      -o "$objdir/curl_stub.o"
+    "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libcurl.a" "$objdir/curl_stub.o"
+  fi
 
-  "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libxpf.a" "$objdir/xpf_stub.o"
-  "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libgrabkernel2.a" "$objdir/libgrabkernel2_stub.o"
-  "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libzstd.a" "$objdir/zstd_stub.o"
-  "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libcurl.a" "$objdir/curl_stub.o"
-  "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libcommoncrypto.a" "$objdir/commoncrypto_stub.o"
+  if [[ ! -f "$THIRD_PARTY_LIB_DIR/libcommoncrypto.a" ]]; then
+    "$CLANG" -target arm64-apple-ios"$MIN_IOS" -isysroot "$SDK" \
+      -O2 -fno-objc-arc \
+      -I"$PROJECT_DIR/stubs" \
+      -I"$THIRD_PARTY_INCLUDE_DIR" \
+      -c "$PROJECT_DIR/stubs/CommonCrypto/commoncrypto_stub.c" \
+      -o "$objdir/commoncrypto_stub.o"
+    "$ar_bin" rcs "$THIRD_PARTY_LIB_DIR/libcommoncrypto.a" "$objdir/commoncrypto_stub.o"
+  fi
 
   # llvm-ar writes the index; no separate ranlib needed.
 }
@@ -249,6 +325,10 @@ LIB_DIR=""
 LIB_LINK_MODE=""
 STATIC_LINK_FLAGS=()
 STUB_THIRD_PARTY="0"
+build_real_choma_xpf_libs
+
+build_stub_third_party_libs
+
 if [[ -f "$THIRD_PARTY_LIB_DIR/libxpf.a" && -f "$THIRD_PARTY_LIB_DIR/libgrabkernel2.a" && -f "$THIRD_PARTY_LIB_DIR/libzstd.a" && -f "$THIRD_PARTY_LIB_DIR/libcurl.a" && -f "$THIRD_PARTY_LIB_DIR/libcommoncrypto.a" ]]; then
   LIB_DIR="$THIRD_PARTY_LIB_DIR"
   LIB_LINK_MODE="static"
@@ -257,17 +337,8 @@ elif [[ -f "$APP_TEMPLATE_DIR/lib/libxpf.dylib" && -f "$APP_TEMPLATE_DIR/lib/lib
   LIB_DIR="$APP_TEMPLATE_DIR/lib"
   LIB_LINK_MODE="dynamic"
 else
-  # Try to build stub libs as a fallback for minimal, linkable IPA builds.
-  build_stub_third_party_libs
-  if [[ -f "$THIRD_PARTY_LIB_DIR/libxpf.a" && -f "$THIRD_PARTY_LIB_DIR/libgrabkernel2.a" && -f "$THIRD_PARTY_LIB_DIR/libzstd.a" && -f "$THIRD_PARTY_LIB_DIR/libcurl.a" && -f "$THIRD_PARTY_LIB_DIR/libcommoncrypto.a" ]]; then
-    LIB_DIR="$THIRD_PARTY_LIB_DIR"
-    LIB_LINK_MODE="static"
-    STATIC_LINK_FLAGS=()
-    STUB_THIRD_PARTY="1"
-  else
-    echo "ERROR: Не найдены ни static, ни dynamic iOS библиотеки XPF/libgrabkernel2" >&2
-    exit 1
-  fi
+  echo "ERROR: Не найдены ни static, ни dynamic iOS библиотеки XPF/libgrabkernel2" >&2
+  exit 1
 fi
 
 # ─── Чистим старый билд ───────────────────────────────────────────────────────
@@ -289,6 +360,9 @@ done < <(
     ! -path "$PROJECT_DIR/wsl_minimal/*" \
     ! -path "$PROJECT_DIR/kexploit/ppl_test.m" \
     ! -path "$PROJECT_DIR/rootless/*" \
+    ! -path "$PROJECT_DIR/tools/*" \
+    ! -path "$PROJECT_DIR/ChOma/*" \
+    ! -path "$PROJECT_DIR/XPF/*" \
     ! -path "$PROJECT_DIR/scripts/*" \
     ! -path "$PROJECT_DIR/stubs/*" \
     -print0 | sort -z
@@ -329,10 +403,12 @@ mkdir -p "$BUILD_DIR"
   -framework IOKit \
   -framework UniformTypeIdentifiers \
   -framework MobileCoreServices \
+  -lcompression \
   -lz \
   "${STATIC_LINK_FLAGS[@]}" \
   -L"$LIB_DIR" \
   -lxpf \
+  -lchoma \
   -lgrabkernel2 \
   -lzstd \
   -lcurl \
