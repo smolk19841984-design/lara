@@ -302,8 +302,12 @@ def main() -> int:
             ],
         }
 
-    # cs_enforcement_disable (string evidence only => Unverified)
-    cs_addr = kernel_base + 0x92F9A0  # existing hypothesis
+    # cs_enforcement_disable: for full Verified state + SignatureMatch, use hand-maintained
+    # iPad8,9_Analysis/21D61/verified_offsets.json. This harness only emits a stub when --amfi-kext is present.
+    if km_amfi is not None:
+        cs_addr = kernel_base + 0x1F2B764  # AMFI __TEXT_EXEC prologue (iPad8,9 21D61)
+    else:
+        cs_addr = kernel_base + 0x92F9A0
     cs_entry = {
         "addr_abs": f"0x{cs_addr:016X}",
         "offset_from_kernel_base": f"0x{(cs_addr - kernel_base):08X}",
@@ -314,9 +318,7 @@ def main() -> int:
         "evidence": [],
     }
     if km_amfi is not None:
-        # prove the string exists somewhere in the binary; still not enough for Verified.
-        hay = km_amfi.data
-        hit = b"cs_enforcement_disable" in hay
+        hit = b"cs_enforcement_disable" in km_amfi.data
         cs_entry["evidence"].append({"type": "StringEvidence", "needle": "cs_enforcement_disable", "present": bool(hit)})
     else:
         cs_entry["evidence"].append({"type": "StringEvidence", "needle": "cs_enforcement_disable", "present": False})

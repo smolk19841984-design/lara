@@ -36,11 +36,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Misc
 @property (nonatomic, copy) NSString *log;
+/// True while `runFullJailbreakPipeline` is in progress (exploit + method stages).
+@property (nonatomic, assign) BOOL pipelineRunning;
 
 + (instancetype)shared;
 + (NSString *)fontPath;
 
 - (void)runExploit:(nullable void(^)(BOOL success))completion;
+/// Runs Run Exploit, then the selected method in Settings: VFS, SBX, or hybrid (SBX then VFS). Skips steps already done.
+- (void)runFullJailbreakPipelineWithCompletion:(nullable void(^)(BOOL success, NSString * _Nullable errorMessage))completion;
 - (void)vfsInit:(nullable void(^)(BOOL success))completion;
 - (void)sbxEscape:(nullable void(^)(BOOL success))completion;
 /// Уникальная цепочка `sbx_escape_root_first` (root → unsandbox → transplant), см. sbx.h.

@@ -10,6 +10,7 @@
 #import "kexploit/darksword.h"
 #import "kexploit/vfs.h"
 #import "kexploit/sbx.h"
+#import "kexploit/offsets.h"
 #include <sys/sysctl.h>
 #import <notify.h>
 
@@ -68,6 +69,7 @@ static LaraManager *_shared = nil;
     self = [super init];
     if (self) {
         _log = @"";
+        _pipelineRunning = NO;
         _vfsInitLog = @"";
         _dsRunning = NO;
         _dsReady = NO;
@@ -135,6 +137,148 @@ static LaraManager *_shared = nil;
             if (completion) completion(success);
         });
     });
+}
+
+- (void)runFullJailbreakPipelineWithCompletion:(void (^)(BOOL, NSString * _Nullable))completion {
+    if (self.pipelineRunning) {
+        if (completion) {
+            completion(NO, @"Jailbreak sequence already running.");
+        }
+        return;
+    }
+    if (!haskernproc()) {
+        if (completion) {
+            completion(NO, @"Kernel offsets missing (open Settings to resolve).");
+        }
+        return;
+    }
+    if (self.dsRunning || self.sbxRunning || self.vfsRunning) {
+        if (completion) {
+            completion(NO, @"Another step is already in progress.");
+        }
+        return;
+    }
+
+    self.pipelineRunning = YES;
+    [self logMessage:@"\n========== Full jailbreak (exploit + method) ==========\n"];
+    [[Logger shared] log:@"[pipeline] full jailbreak started"];
+
+    __weak typeof(self) weakSelf = self;
+    void (^finish)(BOOL, NSString *) = ^(BOOL ok, NSString *err) {
+        __strong typeof(weakSelf) self = weakSelf;
+        if (!self) {
+            return;
+        }
+        self.pipelineRunning = NO;
+        if (ok) {
+            [self logMessage:@"[pipeline] finished OK\n"];
+            [[Logger shared] log:@"[pipeline] finished OK"];
+            [[Logger shared] divider];
+        } else {
+            [self logMessage:[NSString stringWithFormat:@"[pipeline] stopped: %@\n", err ?: @"error"]];
+            [[Logger shared] log:[NSString stringWithFormat:@"[pipeline] failed: %@", err ?: @"?"]];
+            [[Logger shared] divider];
+        }
+        if (completion) {
+            completion(ok, err);
+        }
+    };
+
+    if (self.dsReady) {
+        [self logMessage:@"[pipeline] kernel R/W already active — skipping exploit\n"];
+        [self lara_runPipelineMethodStagesWithCompletion:finish];
+        return;
+    }
+
+    [self runExploitClearingLog:NO completion:^(BOOL success) {
+        __strong typeof(weakSelf) self = weakSelf;
+        if (!self) {
+            return;
+        }
+        if (!success) {
+            finish(NO, @"Kernel exploit failed.");
+            return;
+        }
+        if (!self.dsReady) {
+            finish(NO, @"Exploit did not report kernel R/W ready.");
+            return;
+        }
+        [self lara_runPipelineMethodStagesWithCompletion:finish];
+    }];
+}
+
+- (void)lara_runPipelineMethodStagesWithCompletion:(void (^)(BOOL, NSString * _Nullable))completion {
+    __weak typeof(self) weakSelf = self;
+    NSString *m = [[NSUserDefaults standardUserDefaults] stringForKey:@"selectedmethod"] ?: @"sbx";
+    if ([m isEqualToString:@"vfs"]) {
+        if (self.vfsReady) {
+            [self logMessage:@"[pipeline] VFS already ready — nothing to do for method\n"];
+            completion(YES, nil);
+            return;
+        }
+        [self logMessage:@"[pipeline] method = VFS — vfs_init\n"];
+        [self vfsInit:^(BOOL ok) {
+            __strong typeof(weakSelf) self = weakSelf;
+            if (!self) {
+                return;
+            }
+            completion(ok, ok ? nil : (NSString *)@"VFS init failed.");
+        }];
+        return;
+    }
+    if ([m isEqualToString:@"sbx"]) {
+        if (self.sbxReady) {
+            [self logMessage:@"[pipeline] sandbox already escaped — nothing to do for method\n"];
+            completion(YES, nil);
+            return;
+        }
+        [self logMessage:@"[pipeline] method = SBX — sbx_escape\n"];
+        [self sbxEscape:^(BOOL ok) {
+            __strong typeof(weakSelf) self = weakSelf;
+            if (!self) {
+                return;
+            }
+            completion(ok, ok ? nil : (NSString *)@"Sandbox escape failed.");
+        }];
+        return;
+    }
+
+    [self lara_runPipelineHybridWithCompletion:completion];
+}
+
+- (void)lara_runPipelineHybridWithCompletion:(void (^)(BOOL, NSString * _Nullable))completion {
+    __weak typeof(self) weakSelf = self;
+    if (self.sbxReady && self.vfsReady) {
+        [self logMessage:@"[pipeline] hybrid: SBX and VFS already ready\n"];
+        completion(YES, nil);
+        return;
+    }
+    if (!self.sbxReady) {
+        [self logMessage:@"[pipeline] method = hybrid — sbx_escape, then vfs_init\n"];
+        [self sbxEscape:^(BOOL sbxOk) {
+            __strong typeof(weakSelf) self = weakSelf;
+            if (!self) {
+                return;
+            }
+            if (!sbxOk) {
+                completion(NO, @"Sandbox escape failed.");
+                return;
+            }
+            if (self.vfsReady) {
+                [self logMessage:@"[pipeline] VFS already ready after SBX\n"];
+                completion(YES, nil);
+                return;
+            }
+                [self vfsInit:^(BOOL vOk) {
+                completion(vOk, vOk ? nil : @"VFS init failed after SBX.");
+            }];
+        }];
+        return;
+    }
+    [self logMessage:@"[pipeline] hybrid: SBX done — vfs_init\n"];
+    [self vfsInit:^(BOOL ok) {
+        completion(ok, ok ? nil : @"VFS init failed.");
+    }];
 }
 
 #pragma mark - VFS

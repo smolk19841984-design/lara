@@ -73,7 +73,7 @@ def main() -> int:
     mac_label_off = off("mac_label_update")
     sb_ext_off = off("sandbox_extension_create_or_consume")
 
-    # cs_enforcement_disable must remain gated (Unverified => 0)
+    # cs_enforcement_disable: Verified => emit koffset; Unverified => 0 (LARA_ENABLE_AMFI_PATCH in runtime)
     cs_off = off("cs_enforcement_disable") if is_verified("cs_enforcement_disable") else 0
 
     # TrustCache: keep offset even if Unverified (range-check only); runtime uses it. (Doc requires gating if Unverified,
@@ -88,9 +88,12 @@ def main() -> int:
     sb_check_sig = _get_sig_hex(want("sandbox_check"))
     mac_label_sig = _get_sig_hex(want("mac_label_update"))
     sb_ext_sig = _get_sig_hex(want("sandbox_extension_create_or_consume"))
+    cs_sig = _get_sig_hex(want("cs_enforcement_disable")) if is_verified("cs_enforcement_disable") else None
 
     if not (sb_check_sig and mac_label_sig and sb_ext_sig):
         raise SystemExit("missing signature bytes for one or more sandbox targets")
+    if is_verified("cs_enforcement_disable") and not cs_sig:
+        raise SystemExit("cs_enforcement_disable Verified but missing SignatureMatch bytes in JSON")
 
     content = f"""//
 //  final_kernel_offsets.h
@@ -121,7 +124,7 @@ def main() -> int:
 #define KOFFSET_SANDBOX_EXTENSION_CREATE 0x{sb_ext_off:08X}ULL
 #define KADDR_SANDBOX_EXTENSION_CREATE (KERNEL_BASE + KOFFSET_SANDBOX_EXTENSION_CREATE)
 
-// cs_enforcement_disable is Unverified (string-only evidence) => disabled by default.
+// cs_enforcement_disable: offline-verified 32B prologue in AMFI (apply 8B patch at runtime; opt-in via LARA_ENABLE_AMFI_PATCH).
 #define KOFFSET_CS_ENFORCEMENT_DISABLE 0x{cs_off:08X}ULL
 #define KADDR_CS_ENFORCEMENT_DISABLE (KERNEL_BASE + KOFFSET_CS_ENFORCEMENT_DISABLE)
 
@@ -149,21 +152,32 @@ static const unsigned char mac_label_update_sig[] = {{ { _fmt_c_array(mac_label_
 
 static const unsigned char sandbox_extension_sig[] = {{ { _fmt_c_array(sb_ext_sig) } }};
 #define SANDBOX_EXTENSION_SIG_LEN 32
+"""
 
-static inline uint64_t lara_static_kernel_base(void) {{
+    amfi_sig_block = ""
+    if is_verified("cs_enforcement_disable") and cs_sig:
+        amfi_sig_block = f"""
+// AMFI: prologue at KADDR (32 bytes) — kpatch overwrites first 8 bytes.
+#define AMFI_ENFORCEMENT_PATCH_SIZE 8
+static const unsigned char cs_enforcement_disable_sig[] = {{ { _fmt_c_array(cs_sig) } }};
+#define CS_ENFORCEMENT_DISABLE_SIG_LEN 32
+"""
+
+    tail = """
+static inline uint64_t lara_static_kernel_base(void) {
     return KERNEL_BASE;
-}}
+}
 
-static inline uint64_t get_cs_enforcement_disable_addr(void) {{
+static inline uint64_t get_cs_enforcement_disable_addr(void) {
     return KADDR_CS_ENFORCEMENT_DISABLE;
-}}
+}
 
 #endif /* final_kernel_offsets_h */
 """
-
+    out = content + amfi_sig_block + tail
     os.makedirs(os.path.dirname(args.out_path) or ".", exist_ok=True)
     with open(args.out_path, "w", encoding="utf-8", newline="\n") as f:
-        f.write(content)
+        f.write(out)
 
     print(f"[+] wrote {args.out_path}")
     return 0

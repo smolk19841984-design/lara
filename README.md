@@ -7,6 +7,7 @@ iOS jailbreak-related project. This repository’s **authoritative build notes**
 - **Main doc**: `doc/BUILD_IPA.md`
 - **One-shot 21D61 pipeline (WSL)**: `scripts/rebuild_21D61_wsl.sh` (harness → canonical JSON → generated header → IPA)
 - If `third_party/build/ios` is empty on a fresh machine, the build can auto-run `scripts/bootstrap_third_party_ios_wsl.sh` (OpenSSL + curl + zstd). Use `LARA_SKIP_THIRD_PARTY_BOOTSTRAP=1` to force fast link-only builds when you already have the `.a` files.
+- For release-like builds, use `LARA_STRICT_THIRD_PARTY=1` (fails the build if `libxpf.a` / `libzstd.a` / `libcurl.a` are still the minimal stub archives).
 
 ## Kernel offsets (iPad8,9 / 21D61)
 

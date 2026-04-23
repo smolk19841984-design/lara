@@ -46,14 +46,16 @@
 
 - (void)reloadLogs {
     NSArray *newLogs = [[Logger shared] logs];
-    if (newLogs.count != _displayedLogs.count) {
-        _displayedLogs = newLogs;
-        [self.tableView reloadData];
-        if (_displayedLogs.count > 0) {
-            [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_displayedLogs.count - 1 inSection:0]
-                                 atScrollPosition:UITableViewScrollPositionBottom
-                                         animated:NO];
-        }
+    // Do not use count-only comparison: last row text can change (e.g. repeat "(Nx)") or merge without count change.
+    if ([newLogs isEqualToArray:_displayedLogs]) {
+        return;
+    }
+    _displayedLogs = [newLogs copy];
+    [self.tableView reloadData];
+    if (_displayedLogs.count > 0) {
+        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_displayedLogs.count - 1 inSection:0]
+                             atScrollPosition:UITableViewScrollPositionBottom
+                                     animated:NO];
     }
 }
 

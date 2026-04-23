@@ -316,6 +316,7 @@ static NSArray<NSString *> *ignoredSubstrings(void) {
 }
 
 - (void)appendToFile:(NSArray<NSString *> *)lines {
+    [self reopenLogFileOnDemand];
     if (!self.logFileHandle) return;
     NSString *combined = [[lines componentsJoinedByString:@"\n"] stringByAppendingString:@"\n"];
     NSData *data = [combined dataUsingEncoding:NSUTF8StringEncoding];

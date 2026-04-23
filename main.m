@@ -9,13 +9,10 @@
 #import "AppDelegate.h"
 
 int main(int argc, char * argv[]) {
-    NSString * docs = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-    NSString * logPath = [docs stringByAppendingPathComponent:@"lara.log"];
-    
-    // Redirect stdout and stderr to lara.log for full tracking
-    freopen([logPath fileSystemRepresentation], "a+", stdout);
-    freopen([logPath fileSystemRepresentation], "a+", stderr);
-    
+    // Do not freopen stdout/stderr here: Logger setupLogFile removes Documents/lara.log on first use,
+    // so freopen would leave stdout writing to a deleted inode while the on-disk lara.log stays empty.
+    // [[Logger shared] capture] in AppDelegate owns tee to lara.log + in-memory log.
+
     NSString * appDelegateClassName;
     @autoreleasepool {
         appDelegateClassName = NSStringFromClass([AppDelegate class]);

@@ -22,21 +22,15 @@
 
 ## 3) Stubs → реальные зависимости
 
-Сейчас в проекте есть заглушки:
+В репо остаются **только** те stubs, которые нужны как “последний шанс” для линковки, если нет iOS static libs.
+Для “рабочего” сценария iOS 17.3.1 **нужны реальные** статические либы в `third_party/build/ios/lib/*` (см. `third_party/README.md` и `scripts/bootstrap_third_party_ios_wsl.sh`).
 
-- `stubs/CommonCrypto/*` (SHA1/SHA384/…)
-- `stubs/xpc/xpc.h` (декларации XPC)
-- `stubs/zstd*`, `stubs/libgrabkernel2*` и т.п.
+**Состояние (актуально):**
 
-Если нужен реальный функционал (а не только линковка), нужно заменить stubs на реальные зависимости/SDK headers/линковку.
-
-**Обновление (2026‑04‑22):**
-
-- `libcurl` уже подключён как **реальный** (вариант B) и лежит в `third_party/build/ios/lib/libcurl.a` (с OpenSSL в `third_party/build/ios/openssl/`).
-- Следующие “критичные” кандидаты на замену stub → real для iOS 17.3.1:
-  - (уже сделано) `libzstd` → real (внутрипроцессная распаковка `.zst` через `ZSTD_*` теперь работает)
-  - (уже сделано) `CommonCrypto` → real SHA через OpenSSL `libcrypto`
-  - (уже сделано) `libgrabkernel2`: `grab_kernelcache()` качает через `libcurl` при заданном `LARA_KERNELCACHE_URL`
+- `libcurl` + OpenSSL: собираются в WSL, линкуются статически
+- `libzstd`: real static (для in‑process `.zst`)
+- `CommonCrypto` shim: SHA через OpenSSL `libcrypto`
+- `stubs/*` **не должны** попадать в “релизную” сборку незаметно: используй `LARA_STRICT_THIRD_PARTY=1` (см. `scripts/build_ipa_wsl.sh`)
 
 ## 4) Assets cleanup
 

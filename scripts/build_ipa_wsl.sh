@@ -31,6 +31,71 @@ THIRD_PARTY_BUILD_DIR="$PROJECT_DIR/third_party/build/ios"
 THIRD_PARTY_LIB_DIR="$THIRD_PARTY_BUILD_DIR/lib"
 THIRD_PARTY_INCLUDE_DIR="$THIRD_PARTY_BUILD_DIR/include"
 
+ar_list_members() {
+  # Usage: ar_list_members <path/to/lib.a>
+  local ar_bin="$THEOS_TC/bin/llvm-ar"
+  if [[ ! -f "$1" ]]; then
+    echo "" && return 0
+  fi
+  "$ar_bin" t "$1" 2>/dev/null || true
+}
+
+static_archive_contains() {
+  # Usage: static_archive_contains <lib.a> <object-name>
+  local members
+  members="$(ar_list_members "$1")"
+  echo "$members" | grep -Fxq "$2"
+}
+
+third_party_archive_is_unwanted_stub() {
+  # We only treat these as "bad stubs" for release builds:
+  # - xpf / zstd / curl are expected to be real static libs
+  # libgrabkernel2 + commoncrypto in this project are currently implemented via dedicated stub object files
+  # (names contain "stub") even in "real" mode, so we must not key off generic "stub" substrings.
+  local lib="$1"
+  [[ -f "$lib" ]] || return 1
+  case "$(basename "$lib")" in
+    libxpf.a)
+      static_archive_contains "$lib" "xpf_stub.o"
+      ;;
+    libzstd.a)
+      static_archive_contains "$lib" "zstd_stub.o"
+      ;;
+    libcurl.a)
+      static_archive_contains "$lib" "curl_stub.o"
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+assert_not_stubby_third_party() {
+  # Optional strict mode for release-quality builds: refuse stub archives.
+  if [[ "${LARA_STRICT_THIRD_PARTY:-0}" != "1" ]]; then
+    return 0
+  fi
+
+  local bad=0
+  local a
+  for a in \
+    "$THIRD_PARTY_LIB_DIR/libxpf.a" \
+    "$THIRD_PARTY_LIB_DIR/libzstd.a" \
+    "$THIRD_PARTY_LIB_DIR/libcurl.a"
+  do
+    if [[ -f "$a" ]] && third_party_archive_is_unwanted_stub "$a"; then
+      echo "ERROR: strict third-party check: stub object(s) detected inside: $a" >&2
+      bad=1
+    fi
+  done
+
+  if [[ "$bad" != "0" ]]; then
+    echo "Fix: run scripts/bootstrap_third_party_ios_wsl.sh (WSL) or copy real iOS static libs into third_party/build/ios/lib" >&2
+    echo "Or: unset LARA_STRICT_THIRD_PARTY (not recommended for release)" >&2
+    exit 1
+  fi
+}
+
 maybe_bootstrap_third_party() {
   # If local build artifacts are missing, build real static OpenSSL + curl + zstd
   # from vendored sources under third_party/src (ignored by git; present in dev env).
@@ -379,6 +444,8 @@ STUB_THIRD_PARTY="0"
 build_real_choma_xpf_libs
 
 build_stub_third_party_libs
+
+assert_not_stubby_third_party
 
 if [[ -f "$THIRD_PARTY_LIB_DIR/libxpf.a" && -f "$THIRD_PARTY_LIB_DIR/libgrabkernel2.a" && -f "$THIRD_PARTY_LIB_DIR/libzstd.a" && -f "$THIRD_PARTY_LIB_DIR/libcurl.a" && -f "$THIRD_PARTY_LIB_DIR/libcommoncrypto.a" ]]; then
   LIB_DIR="$THIRD_PARTY_LIB_DIR"

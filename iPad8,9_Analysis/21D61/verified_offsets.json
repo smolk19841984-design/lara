@@ -87,17 +87,36 @@
       ]
     },
     "cs_enforcement_disable": {
-      "addr_abs": "0xFFFFFFF0079339A0",
-      "offset_from_kernel_base": "0x0092F9A0",
+      "addr_abs": "0xFFFFFFF008F2F764",
+      "offset_from_kernel_base": "0x01F2B764",
       "source_file": "iPad8,9_Analysis/21D61/kernelcache_decompressed/kexts/com.apple.driver.AppleMobileFileIntegrity",
-      "segment.section": null,
-      "fileoff": null,
-      "status": "Unverified",
+      "segment.section": "__TEXT_EXEC.__text",
+      "fileoff": "0x19014",
+      "status": "Verified",
       "evidence": [
         {
-          "type": "StringEvidence",
-          "needle": "cs_enforcement_disable",
-          "present": true
+          "type": "CstringKVAInAMFI",
+          "fileoff": "0x47B0",
+          "section": "__TEXT.__cstring",
+          "addr_abs": "0xFFFFFFF007410E50",
+          "offset_from_kernel_base": "0x0040CE50",
+          "note": "Literal 'cs_enforcement_disable' (adrp+add #0xE50) ref from __TEXT_EXEC at 0xFFFFFFF008F2F81C."
+        },
+        {
+          "type": "SignatureMatch",
+          "bytes": "fd7b0fa9fdc30391685fff9008e544f9080140f9a8831cf8af6fd097f30300aa",
+          "match": true
+        },
+        {
+          "type": "SectionCheck",
+          "expected": "__TEXT_EXEC.__text",
+          "actual": "__TEXT_EXEC.__text",
+          "ok": true
+        },
+        {
+          "type": "PatchPolicyNote",
+          "kpatch_bytes": 8,
+          "note": "Runtime kpatch overwrites 8B at prologue (mov x0,0; ret). Function is large; validate on device before production."
         }
       ]
     },
@@ -105,13 +124,17 @@
       "addr_abs": "0xFFFFFFF007AC2968",
       "offset_from_kernel_base": "0x00ABE968",
       "source_file": "iPad8,9_Analysis/21D61/kernelcache_decompressed/kernelcache.release.ipad8.decompressed",
-      "segment.section": null,
+      "segment.section": "__DATA_CONST",
       "fileoff": "0xABE968",
       "status": "Unverified",
       "evidence": [
         {
           "type": "RangeCheck",
           "mapped_to_fileoff": true
+        },
+        {
+          "type": "StringSearch",
+          "note": "ASCII 'pmap_image4_trust_caches' not present in decompressed main Mach-O; trust-cache path uses kread at this slot (kptr/PAC at runtime not validated offline here)."
         }
       ]
     },
@@ -119,13 +142,18 @@
       "addr_abs": "0xFFFFFFF00796F928",
       "offset_from_kernel_base": "0x0096B928",
       "source_file": "iPad8,9_Analysis/21D61/kernelcache_decompressed/kernelcache.release.ipad8.decompressed",
-      "segment.section": null,
+      "segment.section": "__DATA_CONST",
       "fileoff": "0x96B928",
       "status": "Unverified",
       "evidence": [
         {
           "type": "StaticFallback",
           "note": "Present as embedded fallback in kexploit/offsets.m"
+        },
+        {
+          "type": "MachOPlacement",
+          "u64_in_image": "0x0",
+          "note": "KVA lies in __DATA_CONST; 8B read is zero in file (prelink/zerofill). Runtime kread may still be non-zero."
         }
       ]
     },
@@ -178,6 +206,16 @@
         {
           "type": "RangeCheck",
           "mapped_to_fileoff": true
+        },
+        {
+          "type": "OfflineReadCheck",
+          "u64_in_image": "0x3131313131313131",
+          "note": "This koffset is inside __PRELINK_TEXT.__text (code/padding), not a uint8 global. Do not use as the PE flag without a new __DATA symbol resolution."
+        },
+        {
+          "type": "CstringLocation",
+          "name_string_addr_abs": "0xFFFFFFF00A3B5532",
+          "offset_from_kernel_base": "0x033B1532"
         }
       ]
     }

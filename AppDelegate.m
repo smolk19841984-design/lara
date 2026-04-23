@@ -21,8 +21,12 @@
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions {
+    // Install stdout/stderr pipe + lara.log before code that may printf/NSLog.
+    [[Logger shared] capture];
+
     // Один целевой профиль: iPad8,9 + iOS 17.3.x (21D61) — env до любого эксплойта.
     lara_apply_single_device_profile();
+    lara_seed_embedded_if_needed();
 
     // Fix UIDocumentPickerViewController – force asCopy:YES
     [self fixDocumentPicker];
@@ -45,9 +49,6 @@
     } else {
         NSLog(@"device should be supported");
     }
-
-    // Start log capture
-    [[Logger shared] capture];
 
     // Set up window and root view controller
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];

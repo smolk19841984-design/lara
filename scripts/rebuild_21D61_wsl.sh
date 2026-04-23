@@ -13,6 +13,7 @@ python3 scripts/offline_ios17_kernelmap.py
 python3 scripts/generate_final_kernel_offsets_h.py
 
 export LARA_REQUIRE_BUNDLED_ASSETS="${LARA_REQUIRE_BUNDLED_ASSETS:-1}"
+export LARA_STRICT_THIRD_PARTY="${LARA_STRICT_THIRD_PARTY:-1}"
 bash scripts/build_ipa_wsl.sh
 
 echo ""
