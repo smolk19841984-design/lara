@@ -13,6 +13,8 @@
 - `libcurl` подключён как **реальный** (вариант B) и больше не является stub.
 - Для `libcurl` используется статический OpenSSL (`third_party/build/ios/openssl/`).
 - Упаковка IPA очищена от build‑inputs: `assets/libiosexec-1.3.1/` больше не попадает в `Payload/`.
+- Оффсеты 21D61: добавлены офлайн harness + автоген header + зеркальная папка `offset/`; полный прогон одной командой: `scripts/rebuild_21D61_wsl.sh`.
+- Детали/доказательства/ТЗ: `doc/OFFSETS_21D61_EVIDENCE.md`, `doc/ANALYSIS_21D61_REPORT.md`, `doc/AI_TASK_OFFSETS_21D61.md`.
 
 ## Исходные документы в репозитории (источники)
 

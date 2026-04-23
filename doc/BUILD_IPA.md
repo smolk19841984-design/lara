@@ -177,6 +177,27 @@ make install
 wsl -d Ubuntu -- bash -lc "cd /mnt/c/Users/smolk/Documents/GitHub/lara && LARA_REQUIRE_BUNDLED_ASSETS=1 bash scripts/build_ipa_wsl.sh"
 ```
 
+### Полный “канонический” прогон 21D61 (harness → JSON → header → IPA)
+
+Если нужно **пересобрать** оффсетный канон *перед* сборкой (рекомендуемый поток для iPad8,9 / 21D61), используйте:
+
+```bash
+# внутри WSL
+cd /mnt/c/Users/smolk/Documents/GitHub/lara
+bash scripts/rebuild_21D61_wsl.sh
+```
+
+Что делается по цепочке:
+
+- `scripts/offline_ios17_kernelmap.py` → `iPad8,9_Analysis/21D61/verified_offsets.json` (source of truth)
+- `scripts/generate_final_kernel_offsets_h.py` → `kexploit/final_kernel_offsets.h` (автоген, не править руками)
+
+Зеркало артефактов (копия канона) лежит в `offset/`.
+
+#### Runtime‑гейты, связанные с оффсетами
+
+- `LARA_ENABLE_AMFI_PATCH=1` — **опционально**; включает регистрацию AMFI‑патча только если `cs_enforcement_disable` в каноне стал `Verified` (иначе остаётся 0 / отключён).
+
 Результат:
 
 - `dist/lara.ipa`
@@ -184,4 +205,18 @@ wsl -d Ubuntu -- bash -lc "cd /mnt/c/Users/smolk/Documents/GitHub/lara && LARA_R
 ## Где смотреть логи
 
 - `build/wsl/build.log` — stdout/stderr компиляции/линковки (создаётся скриптом).
+
+## Git: что обычно НЕ коммитят
+
+В `.gitignore` намеренно отфильтрованы крупные локальные артефакты, которые **пересобираются** в WSL:
+
+- `third_party/src/`, `third_party/build/`
+- очень большие offline‑входы вроде `iPad8,9_Analysis/21D61/kernelcache_decompressed/`
+- промежуточные логи `iPad8,9_Analysis/analysis_outputs/`
+
+Каноничные результаты анализа/оффсетов, которые **имеет смысл** хранить в git, — это, например:
+
+- `iPad8,9_Analysis/21D61/verified_offsets.json`
+- `kexploit/final_kernel_offsets.h` (если вы коммитите autogen как часть release‑потока)
+- `offset/*` (зеркальные копии/артефакты)
 

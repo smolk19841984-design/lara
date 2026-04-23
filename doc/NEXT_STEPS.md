@@ -6,7 +6,7 @@
 
 Рекомендуется:
 
-- обновить `README.md` в корне (сделать его главным входом)
+- `README.md` в корне обновлён (минимальный вход + ссылки на `doc/`).
 - в `docs/PROJECT_MAP.md` отметить, что часть карты может быть устаревшей
 
 ## 2) Иконки
@@ -57,4 +57,12 @@
 - доступность/исполнение `assets/tools/*`
 - корректность bootstrap flow
 - работа XPF (если используется для оффсетов/парсинга kernelcache)
+
+## 6) 21D61 — что осталось по “железным” доказательствам (после harness)
+
+Сейчас канон собирается офлайн (`iPad8,9_Analysis/21D61/verified_offsets.json`), sandbox‑цели **Verified** по сигнатурам + секции, а вот “серые” цели всё ещё требуют второго независимого доказательства:
+
+- **`cs_enforcement_disable`**: сейчас в основном string evidence → остаётся `Unverified` и runtime‑гейт по `LARA_ENABLE_AMFI_PATCH` (пока не появится xref/symbol/signature proof).
+- **`pmap_image4_trust_caches`**: сейчас в основном range‑map evidence → хорошо как геометрия адреса, но слабо как семантика (нужна проверка контекста/уникальности).
+- **`_kernproc` / `_rootvnode` / `proc` size**: пока это “static fallbacks” из runtime кода — нужно подтвердить через `symbols.json` + доп. проверки.
 

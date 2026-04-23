@@ -22,7 +22,7 @@ typedef struct {
 static sandbox_verified_t sandbox_verified[] = {
     { KERNEL_BASE + 0x02DFE3A8ULL, 0x02DFE3A8ULL, sandbox_sig_1, SANDBOX_SIG_1_LEN, "sandbox_check", "Medium" },
     { KERNEL_BASE + 0x02E02388ULL, 0x02E02388ULL, sandbox_sig_5, SANDBOX_SIG_5_LEN, "mac_label_update", "High" },
-    { KERNEL_BASE + 0x02E26A0CULL, 0x02E26A0CULL, sandbox_sig_12, SANDBOX_SIG_12_LEN, "sandbox_extension_create_or_consume", "High" },
+    { KERNEL_BASE + 0x02E22A0CULL, 0x02E22A0CULL, sandbox_sig_12, SANDBOX_SIG_12_LEN, "sandbox_extension_create_or_consume", "High" },
 };
 
 #define SANDBOX_VERIFIED_COUNT (sizeof(sandbox_verified)/sizeof(sandbox_verified[0]))

@@ -1,0 +1,199 @@
+{
+  "meta": {
+    "build": "21D61",
+    "device": "iPad8,9",
+    "generated_at_unix": 1776877374,
+    "inputs": {
+      "kernelcache": "iPad8,9_Analysis/21D61/kernelcache_decompressed/kernelcache.release.ipad8.decompressed",
+      "sandbox_kext": "iPad8,9_Analysis/Sandbox_Profiles/com.apple.security.sandbox.kext",
+      "amfi_kext": "iPad8,9_Analysis/21D61/kernelcache_decompressed/kexts/com.apple.driver.AppleMobileFileIntegrity",
+      "sandbox_candidates_h": "iPad8,9_Analysis/Sandbox_Profiles/offsets_sandbox_candidates.h"
+    }
+  },
+  "kernel_base": {
+    "addr_abs": "0xFFFFFFF007004000",
+    "status": "Verified",
+    "evidence": [
+      {
+        "type": "MachO",
+        "note": "Derived as the lowest LC_SEGMENT_64 vmaddr from kernelcache Mach-O.",
+        "derived": "0xFFFFFFF007004000",
+        "override_used": false
+      }
+    ]
+  },
+  "targets": {
+    "sandbox_check": {
+      "addr_abs": "0xFFFFFFF009E023A8",
+      "offset_from_kernel_base": "0x02DFE3A8",
+      "source_file": "iPad8,9_Analysis/Sandbox_Profiles/com.apple.security.sandbox.kext",
+      "segment.section": "__TEXT_EXEC.__text",
+      "fileoff": "0x17ED28",
+      "status": "Verified",
+      "evidence": [
+        {
+          "type": "SignatureMatch",
+          "bytes": "fd7bbfa9fd03009128f9fef0085944f9010140f94e8693971f0000f1e0079f1a",
+          "match": true
+        },
+        {
+          "type": "SectionCheck",
+          "expected": "__TEXT_EXEC.__text",
+          "actual": "__TEXT_EXEC.__text",
+          "ok": true
+        }
+      ]
+    },
+    "mac_label_update": {
+      "addr_abs": "0xFFFFFFF009E06388",
+      "offset_from_kernel_base": "0x02E02388",
+      "source_file": "iPad8,9_Analysis/Sandbox_Profiles/com.apple.security.sandbox.kext",
+      "segment.section": "__TEXT_EXEC.__text",
+      "fileoff": "0x182D08",
+      "status": "Verified",
+      "evidence": [
+        {
+          "type": "SignatureMatch",
+          "bytes": "fd7bbfa9fd030091108c47f8f10300aa1172f1f2301ac1daf10310aaf147c1da",
+          "match": true
+        },
+        {
+          "type": "SectionCheck",
+          "expected": "__TEXT_EXEC.__text",
+          "actual": "__TEXT_EXEC.__text",
+          "ok": true
+        }
+      ]
+    },
+    "sandbox_extension_create_or_consume": {
+      "addr_abs": "0xFFFFFFF009E26A0C",
+      "offset_from_kernel_base": "0x02E22A0C",
+      "source_file": "iPad8,9_Analysis/Sandbox_Profiles/com.apple.security.sandbox.kext",
+      "segment.section": "__TEXT_EXEC.__text",
+      "fileoff": "0x1A338C",
+      "status": "Verified",
+      "evidence": [
+        {
+          "type": "SignatureMatch",
+          "bytes": "fd7bbfa9fd03009128d04039680000340000805207000014282040f9011040f9",
+          "match": true
+        },
+        {
+          "type": "SectionCheck",
+          "expected": "__TEXT_EXEC.__text",
+          "actual": "__TEXT_EXEC.__text",
+          "ok": true
+        }
+      ]
+    },
+    "cs_enforcement_disable": {
+      "addr_abs": "0xFFFFFFF0079339A0",
+      "offset_from_kernel_base": "0x0092F9A0",
+      "source_file": "iPad8,9_Analysis/21D61/kernelcache_decompressed/kexts/com.apple.driver.AppleMobileFileIntegrity",
+      "segment.section": null,
+      "fileoff": null,
+      "status": "Unverified",
+      "evidence": [
+        {
+          "type": "StringEvidence",
+          "needle": "cs_enforcement_disable",
+          "present": true
+        }
+      ]
+    },
+    "pmap_image4_trust_caches": {
+      "addr_abs": "0xFFFFFFF007AC2968",
+      "offset_from_kernel_base": "0x00ABE968",
+      "source_file": "iPad8,9_Analysis/21D61/kernelcache_decompressed/kernelcache.release.ipad8.decompressed",
+      "segment.section": null,
+      "fileoff": "0xABE968",
+      "status": "Unverified",
+      "evidence": [
+        {
+          "type": "RangeCheck",
+          "mapped_to_fileoff": true
+        }
+      ]
+    },
+    "_kernproc": {
+      "addr_abs": "0xFFFFFFF00796F928",
+      "offset_from_kernel_base": "0x0096B928",
+      "source_file": "iPad8,9_Analysis/21D61/kernelcache_decompressed/kernelcache.release.ipad8.decompressed",
+      "segment.section": null,
+      "fileoff": "0x96B928",
+      "status": "Unverified",
+      "evidence": [
+        {
+          "type": "StaticFallback",
+          "note": "Present as embedded fallback in kexploit/offsets.m"
+        }
+      ]
+    },
+    "_rootvnode": {
+      "addr_abs": "0xFFFFFFF00A217640",
+      "offset_from_kernel_base": "0x03213640",
+      "source_file": "iPad8,9_Analysis/21D61/kernelcache_decompressed/kernelcache.release.ipad8.decompressed",
+      "segment.section": null,
+      "fileoff": "0x3213640",
+      "status": "Unverified",
+      "evidence": [
+        {
+          "type": "StaticFallback",
+          "note": "Present as embedded fallback in kexploit/offsets.m"
+        }
+      ]
+    },
+    "_allproc": {
+      "addr_abs": null,
+      "offset_from_kernel_base": null,
+      "source_file": "iPad8,9_Analysis/21D61/kernelcache_decompressed/kernelcache.release.ipad8.decompressed",
+      "status": "Unverified",
+      "evidence": [
+        {
+          "type": "RuntimeFallback",
+          "note": "Resolved at runtime if kernproc fails"
+        }
+      ]
+    },
+    "kernelStruct.proc.struct_size": {
+      "addr_abs": null,
+      "offset_from_kernel_base": null,
+      "source_file": "iPad8,9_Analysis/21D61/kernelcache_decompressed/kernelcache.release.ipad8.decompressed",
+      "status": "Unverified",
+      "evidence": [
+        {
+          "type": "StaticFallback",
+          "value": "0x730"
+        }
+      ]
+    },
+    "PE_i_can_has_debugger": {
+      "addr_abs": "0xFFFFFFF0078223D8",
+      "offset_from_kernel_base": "0x0081E3D8",
+      "source_file": "iPad8,9_Analysis/21D61/kernelcache_decompressed/kernelcache.release.ipad8.decompressed",
+      "segment.section": "__PRELINK_TEXT.__text",
+      "fileoff": "0x81E3D8",
+      "status": "Unverified",
+      "evidence": [
+        {
+          "type": "RangeCheck",
+          "mapped_to_fileoff": true
+        }
+      ]
+    }
+  },
+  "rejected_candidates": [
+    {
+      "candidate_index": 7,
+      "vmaddr": "0xFFFFFFF009E09F8C",
+      "status": "Rejected",
+      "reason": "Signature mismatch"
+    },
+    {
+      "candidate_index": 8,
+      "vmaddr": "0xFFFFFFF009E11014",
+      "status": "Rejected",
+      "reason": "Signature mismatch"
+    }
+  ]
+}

@@ -28,8 +28,8 @@
   - Заглушки для сборки без некоторых SDK headers / зависимостей.
   - Важные:
     - `stubs/xpc/xpc.h` — расширен минимальными декларациями XPC dictionary API.
-    - `stubs/CommonCrypto/*` — stub для SHA1/SHA256/SHA384 (нужен для сборки ChOma).
-    - `stubs/zstd.h`, `stubs/zstd_stub.c`, `stubs/curl/*`, `stubs/xpf_stub.c` и т.д.
+    - `stubs/CommonCrypto/*` — для линковки/совместимости, но **runtime SHA** сейчас идёт через OpenSSL (см. `stubs/CommonCrypto/commoncrypto_stub.c` + `third_party/build/ios/openssl/`).
+    - `stubs/curl/*` — только если build не видит “настоящий” `curl` header; **канон** — реальный `libcurl` + `third_party/build/ios/include/curl/`.
   - В идеале stubs должны уходить по мере подключения “настоящих” зависимостей.
 
 ## 3) Текущее состояние: сборка работает
@@ -40,10 +40,11 @@
 
 Состояние на **2026‑04‑22**:
 
-- IPA собирается: `dist/lara.ipa` (≈38 MB)
+- IPA собирается: `dist/lara.ipa` (в последних прогонах ≈ 22MB; размер плавающий по ассетам/артефактам)
 - `XPF/ChOma` собираются “реальными” (static) в `third_party/build/ios/lib/`
 - `libcurl` теперь **реальный** (static) и больше не является `curl_stub.o`
 - Для `libcurl` используется **статический OpenSSL**, собранный под iOS arm64 и установленный в `third_party/build/ios/openssl/`
+- `libzstd` **реальный** (static) и используется для in‑process распаковки `.zst` (см. `third_party/build/ios/lib/libzstd.a`)
 
 и внутри IPA присутствуют:
 
@@ -138,11 +139,22 @@
   - Проект содержит места, где логика завязана на iOS 17.3.1 (паттерны/оффсеты/гейты).
   - Нужно подтвердить, что для целевого устройства (например iPad8,9 / build 21D61) реальные адреса/патчи совпадают и не остались “примерными”.
 - **Оставшиеся stubs (runtime не будет работать полноценно)**:
-  - `libzstd` пока stub → распаковка `.tar.zst` bootstrap на устройстве может не работать.
-  - `CommonCrypto` раньше был stub → теперь реализован через OpenSSL `libcrypto` (SHA1/SHA256/SHA384).
+  - `CommonCrypto` “как у Apple” через SDK может отсутствовать в toolchain — поэтому в сборке остаётся **совместимый** слой, но **хэши** сейчас идут через OpenSSL.
   - `libgrabkernel2` раньше был stub → теперь `grab_kernelcache()` реализован через `libcurl` (URL задаётся через `LARA_KERNELCACHE_URL`).
 - **SDK 16.5 vs iOS 17.3.1**:
   - Сборка идёт на `/opt/theos/sdks/iPhoneOS16.5.sdk`. Это нормально для компиляции, но не гарантирует правильность runtime‑поведения на 17.3.1 (особенно для приватных API/энтропии оффсетов).
 - **Assets в IPA**:
   - Теперь `assets/libiosexec-1.3.1/` не пакуется в IPA (build‑input), но нужно следить, чтобы `assets/tools/libiosexec.1.dylib` и `assets/tools/tar` действительно выполнялись на устройстве.
+
+## 10) 21D61 (iPad8,9) — каноничные kernel offsets (офлайн)
+
+- **Source of truth (JSON)**: `iPad8,9_Analysis/21D61/verified_offsets.json`
+- **Runtime header (autogen)**: `kexploit/final_kernel_offsets.h` (генерится из JSON, **не** править руками)
+- **Harness**: `scripts/offline_ios17_kernelmap.py` (VM↔fileoff map + `vm_read` + валидации)
+- **Generator**: `scripts/generate_final_kernel_offsets_h.py`
+- **One-shot rebuild (WSL)**: `scripts/rebuild_21D61_wsl.sh` (harness → JSON → header → IPA)
+- **Зеркало**: `offset/verified_offsets_21D61.json` + `offset/final_kernel_offsets_21D61.generated.h`
+- **Политика**:
+  - `cs_enforcement_disable` в каноне часто `Unverified` (string evidence) → в header **0** и runtime‑гейт: `LARA_ENABLE_AMFI_PATCH=1` (см. `kexploit/sandbox_patches.m`)
+  - `KERNEL_BASE` в JSON берётся из Mach‑O kernelcache: минимальный `vmaddr` `LC_SEGMENT_64` (сейчас `0xFFFFFFF007004000`)
 

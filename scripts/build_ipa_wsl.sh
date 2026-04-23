@@ -31,6 +31,41 @@ THIRD_PARTY_BUILD_DIR="$PROJECT_DIR/third_party/build/ios"
 THIRD_PARTY_LIB_DIR="$THIRD_PARTY_BUILD_DIR/lib"
 THIRD_PARTY_INCLUDE_DIR="$THIRD_PARTY_BUILD_DIR/include"
 
+maybe_bootstrap_third_party() {
+  # If local build artifacts are missing, build real static OpenSSL + curl + zstd
+  # from vendored sources under third_party/src (ignored by git; present in dev env).
+  if [[ "${LARA_SKIP_THIRD_PARTY_BOOTSTRAP:-0}" == "1" ]]; then
+    return 0
+  fi
+  if [[ ! -f "$PROJECT_DIR/scripts/bootstrap_third_party_ios_wsl.sh" ]]; then
+    return 0
+  fi
+  if [[ ! -f "$PROJECT_DIR/third_party/src/openssl/Configure" ]]; then
+    return 0
+  fi
+  if [[ ! -f "$PROJECT_DIR/third_party/src/curl/configure" ]]; then
+    return 0
+  fi
+  if [[ ! -f "$PROJECT_DIR/third_party/src/zstd/lib/Makefile" ]]; then
+    return 0
+  fi
+
+  local need=0
+  if [[ ! -f "$THIRD_PARTY_LIB_DIR/libssl.a" || ! -f "$THIRD_PARTY_LIB_DIR/libcrypto.a" ]]; then need=1; fi
+  if [[ ! -f "$THIRD_PARTY_LIB_DIR/libcurl.a" ]]; then need=1; fi
+  if [[ ! -f "$THIRD_PARTY_LIB_DIR/libzstd.a" ]]; then need=1; fi
+  # Note: OpenSSL "installed" tree may exist under $THIRD_PARTY_BUILD_DIR/openssl even when
+  # we also copy libssl/libcrypto into $THIRD_PARTY_LIB_DIR. Don't use openssl/lib presence
+  # as a trigger by itself, or we'll rebuild for no reason.
+
+  if [[ "$need" == "0" ]]; then
+    return 0
+  fi
+
+  echo "  third_party: missing iOS static libs; running bootstrap (OpenSSL + curl + zstd)..."
+  bash "$PROJECT_DIR/scripts/bootstrap_third_party_ios_wsl.sh"
+}
+
 # ─── Проверки ─────────────────────────────────────────────────────────────────
 if [[ ! -f "$CLANG" ]]; then
   echo "ERROR: clang не найден по пути $CLANG" >&2
@@ -47,6 +82,8 @@ if [[ ! -d "$SDK" ]]; then
     exit 1
   fi
 fi
+
+maybe_bootstrap_third_party
 
 echo "=== Theos clang build: $APP_NAME ==="
 echo "  Toolchain : $THEOS_TC"

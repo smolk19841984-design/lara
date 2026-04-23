@@ -29,9 +29,12 @@ static final_offset_t final_kernel_offsets[] = {
     /* Sandbox functions (from sandbox_verified_offsets.h) */
     { KERNEL_BASE + 0x02DFE3A8ULL, 0x02DFE3A8ULL, sandbox_sig_1, SANDBOX_SIG_1_LEN, "sandbox_check", "High" },
     { KERNEL_BASE + 0x02E02388ULL, 0x02E02388ULL, sandbox_sig_5, SANDBOX_SIG_5_LEN, "mac_label_update", "High" },
-    { KERNEL_BASE + 0x02E26A0CULL, 0x02E26A0CULL, sandbox_sig_12, SANDBOX_SIG_12_LEN, "sandbox_extension_create_or_consume", "High" },
-    /* AMFI: cs_enforcement_disable function (discovered statically via ADRP+ADD XREF) */
-    { 0xFFFFFFF008F2F764ULL, 0x01F2B764ULL, cs_enforcement_sig, CS_ENFORCEMENT_SIG_LEN, "cs_enforcement_disable", "High" },
+    { KERNEL_BASE + 0x02E22A0CULL, 0x02E22A0CULL, sandbox_sig_12, SANDBOX_SIG_12_LEN, "sandbox_extension_create_or_consume", "High" },
+    /* AMFI: cs_enforcement_disable
+     * Offline note: current ADRP+ADD/LDR XREF scan did NOT find XREFs for configured TARGET_VM.
+     * Therefore this entry must be treated as unverified until a second independent validation method succeeds.
+     */
+    { 0, 0, cs_enforcement_sig, CS_ENFORCEMENT_SIG_LEN, "cs_enforcement_disable", "NotFound" },
 };
 
 #define FINAL_KERNEL_OFFSETS_COUNT (sizeof(final_kernel_offsets)/sizeof(final_kernel_offsets[0]))
@@ -61,10 +64,10 @@ static const sandbox_offsets_t sandbox_offsets = {
     KERNEL_BASE + 0x02E02388ULL,
     sandbox_sig_5,
     SANDBOX_SIG_5_LEN,
-    KERNEL_BASE + 0x02E26A0CULL,
+    KERNEL_BASE + 0x02E22A0CULL,
     sandbox_sig_12,
     SANDBOX_SIG_12_LEN,
-    0xFFFFFFF008F2F764ULL,
+    0,
     cs_enforcement_sig,
     CS_ENFORCEMENT_SIG_LEN
 };

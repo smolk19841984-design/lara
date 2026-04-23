@@ -14,14 +14,13 @@
 
 ### 2. Оффсеты Ядра
 - **Файл:** `kexploit/final_kernel_offsets.h` (обновлен)
-- **Статус:** ✅ ВЕРИФИЦИРОВАНЫ ЧЕРЕЗ SIGNATURE MATCHING
-- **Адреса:**
-  - `KERNEL_BASE`: 0xFFFFFFF007004000
-  - `sandbox_check`: 0x02DFE3A8 (candidate 1, signature match)
-  - `mac_label_update`: 0x02E02388 (candidate 5, signature match)
-  - `sandbox_extension_create`: 0x02E26A0C (candidate 12, signature match)
-  - `cs_enforcement_disable`: 0x00405570
-  - `pmap_image4_trust_caches`: 0x00F2B8A0
+- **Статус:** ✅ Канонизированы офлайн harness’ом
+- **Каноничный источник правды**:
+  - `iPad8,9_Analysis/21D61/verified_offsets.json`
+  - генератор: `scripts/generate_final_kernel_offsets_h.py` → `kexploit/final_kernel_offsets.h`
+- **Примечание**:
+  - `cs_enforcement_disable` остаётся **Unverified** (string evidence) и по умолчанию **disabled (0)**, пока не появится второе независимое доказательство.
+  - Доказательства собраны в `doc/OFFSETS_21D61_EVIDENCE.md`.
 
 ### 3. Патчи Песочницы
 - **Файл:** `kexploit/sandbox_patches.m`
